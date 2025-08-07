@@ -1,10 +1,8 @@
 package org.example.tennis_scoreboard.repository;
 
-import com.querydsl.jpa.impl.JPAQuery;
 import lombok.RequiredArgsConstructor;
 import org.example.tennis_scoreboard.model.Match;
-import org.example.tennis_scoreboard.model.QMatch;
-import org.hibernate.SessionFactory;
+import org.hibernate.Session;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,41 +10,36 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MatchRepositoryImpl implements MatchRepository {
 
-    private static final QMatch MATCH = QMatch.match;
-
-    private final SessionFactory sessionFactory;
+    private final Session session;
 
     @Override
     public Optional<Match> findById(Long id) {
-        return Optional.ofNullable(new JPAQuery<Match>(sessionFactory.getCurrentSession())
-                .select(MATCH)
-                .from(MATCH)
-                .where(MATCH.id.eq(id))
-                .fetchOne()
+        return Optional.ofNullable(
+                session.find(Match.class, id)
         );
     }
 
     @Override
     public List<Match> findAll() {
-        return new JPAQuery<Match>(sessionFactory.getCurrentSession())
-                .select(MATCH)
-                .from(MATCH)
-                .fetch();
+        return session.createQuery(
+                "select m from Match m", Match.class
+        ).getResultList();
     }
 
     @Override
     public Match save(Match entity) {
-        return sessionFactory.getCurrentSession().merge(entity);
+        session.persist(entity);
+        return entity;
     }
 
     @Override
     public void update(Match entity) {
-        sessionFactory.getCurrentSession().merge(entity);
+        session.merge(entity);
     }
 
     @Override
     public void delete(Match entity) {
-        sessionFactory.getCurrentSession().remove(entity);
+        session.remove(entity);
     }
 
 }

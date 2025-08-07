@@ -5,8 +5,10 @@ import lombok.*;
 
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 public class Player {
 
