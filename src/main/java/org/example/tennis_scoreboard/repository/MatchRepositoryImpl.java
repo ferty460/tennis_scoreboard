@@ -42,4 +42,10 @@ public class MatchRepositoryImpl implements MatchRepository {
         session.remove(entity);
     }
 
+    @Override
+    public List<Match> findAllByWinnerIsNotNull() {
+        return session.createQuery(
+                "select m from Match m where winner is not null", Match.class
+        ).getResultList();
+    }
 }

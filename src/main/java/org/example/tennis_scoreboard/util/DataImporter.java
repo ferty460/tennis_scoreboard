@@ -38,9 +38,8 @@ public class DataImporter {
     }
 
     private Player savePlayer(String name) {
-        Player player = Player.builder()
-                .name(name)
-                .build();
+        Player player = new Player();
+        player.setName(name);
         playerRepository.save(player);
 
         return player;
