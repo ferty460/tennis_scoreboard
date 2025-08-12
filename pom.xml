@@ -19,6 +19,7 @@
         <jakarta.servlet-api.version>6.1.0</jakarta.servlet-api.version>
         <hibernate.version>7.0.9.Final</hibernate.version>
         <h2.version>2.3.232</h2.version>
+        <flyway.version>11.10.1</flyway.version>
         <lombok.version>1.18.38</lombok.version>
         <junit.version>5.13.4</junit.version>
         <assertj.version>3.27.4</assertj.version>
@@ -42,6 +43,11 @@
             <artifactId>h2</artifactId>
             <version>${h2.version}</version>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>${flyway.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
