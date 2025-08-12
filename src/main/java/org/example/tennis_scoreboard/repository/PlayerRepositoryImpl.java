@@ -1,16 +1,21 @@
 package org.example.tennis_scoreboard.repository;
 
-import lombok.RequiredArgsConstructor;
+import org.example.tennis_scoreboard.context.Component;
 import org.example.tennis_scoreboard.model.Player;
+import org.example.tennis_scoreboard.util.HibernateUtil;
 import org.hibernate.Session;
 
 import java.util.List;
 import java.util.Optional;
 
-@RequiredArgsConstructor
+@Component
 public class PlayerRepositoryImpl implements PlayerRepository {
 
     private final Session session;
+
+    public PlayerRepositoryImpl() {
+        this.session = HibernateUtil.getSessionFactory().openSession();
+    }
 
     @Override
     public Optional<Player> findById(Long id) {

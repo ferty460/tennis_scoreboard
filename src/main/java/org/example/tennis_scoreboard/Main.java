@@ -1,18 +1,30 @@
 package org.example.tennis_scoreboard;
 
+import org.example.tennis_scoreboard.config.AppConfig;
+import org.example.tennis_scoreboard.context.ApplicationContext;
+import org.example.tennis_scoreboard.model.Player;
 import org.example.tennis_scoreboard.repository.MatchRepository;
 import org.example.tennis_scoreboard.repository.MatchRepositoryImpl;
 import org.example.tennis_scoreboard.repository.PlayerRepository;
 import org.example.tennis_scoreboard.repository.PlayerRepositoryImpl;
+import org.example.tennis_scoreboard.service.PlayerService;
 import org.example.tennis_scoreboard.util.DataImporter;
 import org.example.tennis_scoreboard.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
+import java.sql.*;
+
 public class Main {
 
     public static void main(String[] args) {
-        try (SessionFactory sessionFactory = HibernateUtil.getSessionFactory()) {
+        ApplicationContext context = new ApplicationContext(AppConfig.class);
+        PlayerService playerService = context.getBean(PlayerService.class);
+        Player player = new Player();
+        player.setName("John Doe");
+        playerService.save(player);
+
+        /*try (SessionFactory sessionFactory = HibernateUtil.getSessionFactory()) {
             try (Session session = sessionFactory.openSession()) {
                 session.beginTransaction();
 
@@ -32,7 +44,7 @@ public class Main {
 
                 session.getTransaction().commit();
             }
-        }
+        }*/
     }
 
 }
