@@ -1,4 +1,4 @@
-INSERT INTO player
+INSERT INTO player (name)
 VALUES ('Roger Federer'),
        ('Rafael Nadal'),
        ('Novak Djokovic'),
@@ -18,4 +18,4 @@ VALUES (1, 2, 1),
        (10, 1, 10),
        (3, 6, 6),
        (8, 7, 8),
-       (1, 4, 4)
+       (1, 4, 4);
