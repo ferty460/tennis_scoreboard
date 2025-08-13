@@ -6,6 +6,7 @@ import org.example.tennis_scoreboard.model.Match;
 import org.example.tennis_scoreboard.repository.MatchRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class MatchService {
@@ -21,8 +22,24 @@ public class MatchService {
         matchRepository.save(match);
     }
 
+    public List<Match> findAll() {
+        return matchRepository.findAll();
+    }
+
     public List<Match> getAllFinishedMatches() {
         return matchRepository.findAllByWinnerIsNotNull();
+    }
+
+    public Optional<Match> getMatchById(long id) {
+        return matchRepository.findById(id);
+    }
+
+    public void update(Match match) {
+        matchRepository.update(match);
+    }
+
+    public void delete(Match match) {
+        matchRepository.delete(match);
     }
 
 }

@@ -5,14 +5,16 @@ import org.example.tennis_scoreboard.model.Match;
 import org.example.tennis_scoreboard.model.MatchState;
 import org.example.tennis_scoreboard.model.Player;
 
+import java.util.UUID;
+
 @RequiredArgsConstructor
 public class MatchScoreCalculationService {
 
     private final MatchService matchService;
     private final MatchStorageService matchStorageService;
 
-    public void pointWon(Match match, Player winner) {
-        MatchState state = matchStorageService.getMatchState(match.getId());
+    public void pointWon(UUID matchUuid, Match match, Player winner) {
+        MatchState state = matchStorageService.getMatchState(matchUuid);
 
         if (state == null || state.isFinished()) {
             throw new IllegalStateException("Match is not active");
@@ -25,11 +27,11 @@ public class MatchScoreCalculationService {
             state.setSecondPlayerPoints(state.getSecondPlayerPoints() + 1);
         }
 
-        checkGameWinner(match, state);
-        matchStorageService.updateMatchState(state);
+        checkGameWinner(matchUuid, match, state);
+        matchStorageService.updateMatchState(matchUuid, state);
     }
 
-    private void checkGameWinner(Match match, MatchState state) {
+    private void checkGameWinner(UUID matchUuid, Match match, MatchState state) {
         int firstPlayerPoints = state.getFirstPlayerPoints();
         int secondPlayerPoints = state.getSecondPlayerPoints();
 
@@ -43,11 +45,11 @@ public class MatchScoreCalculationService {
             state.setFirstPlayerPoints(0);
             state.setSecondPlayerPoints(0);
 
-            checkSetWinner(match, state);
+            checkSetWinner(matchUuid, match, state);
         }
     }
 
-    private void checkSetWinner(Match match, MatchState state) {
+    private void checkSetWinner(UUID matchUuid, Match match, MatchState state) {
         int firstPlayerGames = state.getFirstPlayerGames();
         int secondPlayerGames = state.getSecondPlayerGames();
 
@@ -61,25 +63,25 @@ public class MatchScoreCalculationService {
             state.setFirstPlayerGames(0);
             state.setSecondPlayerGames(0);
 
-            checkMatchWinner(match, state);
+            checkMatchWinner(matchUuid, match, state);
         }
     }
 
-    private void checkMatchWinner(Match match, MatchState state) {
+    private void checkMatchWinner(UUID matchUuid, Match match, MatchState state) {
         if (state.getFirstPlayerSets() == 2) {
             match.setWinner(match.getFirstPlayer());
             state.setFinished(true);
-            finishMatch(match);
+            finishMatch(matchUuid, match);
         } else if (state.getSecondPlayerSets() == 2) {
             match.setWinner(match.getSecondPlayer());
             state.setFinished(true);
-            finishMatch(match);
+            finishMatch(matchUuid, match);
         }
     }
 
-    private void finishMatch(Match match) {
+    private void finishMatch(UUID matchUuid, Match match) {
         matchService.save(match);
-        matchStorageService.removeMatch(match.getId());
+        matchStorageService.removeMatch(matchUuid);
     }
 
 }

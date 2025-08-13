@@ -5,34 +5,35 @@ import org.example.tennis_scoreboard.model.MatchState;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class MatchStorageService {
 
-    private final Map<Long, MatchState> matches;
+    private final Map<UUID, MatchState> matches;
 
     public MatchStorageService() {
         matches = new HashMap<>();
     }
 
-    public void createMatch(Match match) {
-        matches.put(match.getId(), MatchState.builder()
+    public void createMatch(UUID uuid, Match match) {
+        matches.put(uuid, MatchState.builder()
                 .matchId(match.getId())
                 .build());
     }
 
-    public MatchState getMatchState(long id) {
-        if (matches.containsKey(id)) {
-            return matches.get(id);
+    public MatchState getMatchState(UUID uuid) {
+        if (matches.containsKey(uuid)) {
+            return matches.get(uuid);
         }
         throw new IllegalStateException("Match not found");
     }
 
-    public void updateMatchState(MatchState match) {
-        matches.put(match.getMatchId(), match);
+    public void updateMatchState(UUID uuid, MatchState match) {
+        matches.put(uuid, match);
     }
 
-    public void removeMatch(long id) {
-        matches.remove(id);
+    public void removeMatch(UUID uuid) {
+        matches.remove(uuid);
     }
 
 }

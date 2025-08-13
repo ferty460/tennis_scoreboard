@@ -8,6 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -20,6 +22,7 @@ public class MatchScoreCalculationServiceTest {
     private Player p1;
     private Player p2;
     private Match match;
+    private UUID uuid;
 
     @BeforeEach
     void setUp() {
@@ -30,13 +33,14 @@ public class MatchScoreCalculationServiceTest {
         p1 = new Player(1L, "Fedorino Cappuccino");
         p2 = new Player(2L, "Sudak Tudak");
 
+        uuid = UUID.randomUUID();
         match = Match.builder()
                 .id(1L)
                 .firstPlayer(p1)
                 .secondPlayer(p2)
                 .build();
 
-        matchStorageService.createMatch(match);
+        matchStorageService.createMatch(uuid, match);
     }
 
     @Nested
@@ -46,12 +50,12 @@ public class MatchScoreCalculationServiceTest {
         @Test
         @DisplayName("Given ongoing match — when first player wins a point — then points increase by one")
         void givenOngoingMatch_whenFirstPlayerWinsPoint_thenPointsIncreaseByOne() {
-            MatchState initialState = matchStorageService.getMatchState(match.getId());
+            MatchState initialState = matchStorageService.getMatchState(uuid);
             assertThat(initialState.getFirstPlayerPoints()).isZero();
 
-            scoreService.pointWon(match, p1);
+            scoreService.pointWon(uuid, match, p1);
 
-            int firstPlayerPoints = matchStorageService.getMatchState(match.getId()).getFirstPlayerPoints();
+            int firstPlayerPoints = matchStorageService.getMatchState(uuid).getFirstPlayerPoints();
             assertThat(firstPlayerPoints)
                     .as("The first player must get +1 point")
                     .isEqualTo(1);
@@ -60,12 +64,12 @@ public class MatchScoreCalculationServiceTest {
         @Test
         @DisplayName("Given ongoing match — when first player wins a game — then games increase by one")
         void givenOngoingMatch_whenFirstPlayerWinsGame_thenGamesIncreaseByOne() {
-            MatchState initialState = matchStorageService.getMatchState(match.getId());
+            MatchState initialState = matchStorageService.getMatchState(uuid);
             assertThat(initialState.getFirstPlayerGames()).isZero();
 
             addOneGame(p1);
 
-            int firstPlayerGames = matchStorageService.getMatchState(match.getId()).getFirstPlayerGames();
+            int firstPlayerGames = matchStorageService.getMatchState(uuid).getFirstPlayerGames();
             assertThat(firstPlayerGames)
                     .as("The first player must get +1 game")
                     .isEqualTo(1);
@@ -74,12 +78,12 @@ public class MatchScoreCalculationServiceTest {
         @Test
         @DisplayName("Given ongoing match — when first player wins a set — then sets increase by one")
         void givenOngoingMatch_whenFirstPlayerWinsSet_thenSetsIncreaseByOne() {
-            MatchState initialState = matchStorageService.getMatchState(match.getId());
+            MatchState initialState = matchStorageService.getMatchState(uuid);
             assertThat(initialState.getFirstPlayerSets()).isZero();
 
             addOneSet(p1);
 
-            int firstPlayerSets = matchStorageService.getMatchState(match.getId()).getFirstPlayerSets();
+            int firstPlayerSets = matchStorageService.getMatchState(uuid).getFirstPlayerSets();
             assertThat(firstPlayerSets)
                     .as("The first player must get +1 set")
                     .isEqualTo(1);
@@ -96,7 +100,7 @@ public class MatchScoreCalculationServiceTest {
 
             addOneGame(p1);
 
-            MatchState state = matchStorageService.getMatchState(match.getId());
+            MatchState state = matchStorageService.getMatchState(uuid);
             assertThat(state.getFirstPlayerSets()).isEqualTo(1);
             assertThat(state.getSecondPlayerSets()).isEqualTo(0);
         }
@@ -110,7 +114,7 @@ public class MatchScoreCalculationServiceTest {
                 }
             }
 
-            MatchState state = matchStorageService.getMatchState(match.getId());
+            MatchState state = matchStorageService.getMatchState(uuid);
 
             assertThat(match.getWinner()).isEqualTo(p2);
             assertThat(state.isFinished()).isTrue();
@@ -124,9 +128,9 @@ public class MatchScoreCalculationServiceTest {
                     addOneGame(p1);
                 }
             }
-            assertThat(matchStorageService.getMatchState(match.getId()).isFinished()).isTrue();
+            assertThat(matchStorageService.getMatchState(uuid).isFinished()).isTrue();
 
-            assertThatThrownBy(() -> scoreService.pointWon(match, p1))
+            assertThatThrownBy(() -> scoreService.pointWon(uuid, match, p1))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("Match is not active");
         }
@@ -134,9 +138,9 @@ public class MatchScoreCalculationServiceTest {
         @Test
         @DisplayName("Given match not ongoing — when pointWon is called — then exception is thrown")
         void givenMatchNotOngoing_whenPointWonCalled_thenExceptionThrown() {
-            matchStorageService.removeMatch(match.getId());
+            matchStorageService.removeMatch(uuid);
 
-            assertThatThrownBy(() -> scoreService.pointWon(match, p1))
+            assertThatThrownBy(() -> scoreService.pointWon(uuid, match, p1))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("Match not found");
         }
@@ -152,10 +156,10 @@ public class MatchScoreCalculationServiceTest {
         void givenDeuceSituation_whenPlayersAlternatePoints_thenRemainTiedAtDeuce() {
             givePreDeuceSituation();
 
-            scoreService.pointWon(match, p1);
-            scoreService.pointWon(match, p2);
+            scoreService.pointWon(uuid, match, p1);
+            scoreService.pointWon(uuid, match, p2);
 
-            MatchState state = matchStorageService.getMatchState(match.getId());
+            MatchState state = matchStorageService.getMatchState(uuid);
             assertThat(state.getFirstPlayerPoints()).isEqualTo(4);
             assertThat(state.getSecondPlayerPoints()).isEqualTo(4);
             assertThat(state.getFirstPlayerGames()).isEqualTo(0);
@@ -167,10 +171,10 @@ public class MatchScoreCalculationServiceTest {
         void givenDeuceSituation_whenFirstPlayerTakesTwoPointsInARow_thenWinsTheGame() {
             givePreDeuceSituation();
 
-            scoreService.pointWon(match, p1);
-            scoreService.pointWon(match, p1);
+            scoreService.pointWon(uuid, match, p1);
+            scoreService.pointWon(uuid, match, p1);
 
-            MatchState state = matchStorageService.getMatchState(match.getId());
+            MatchState state = matchStorageService.getMatchState(uuid);
             assertThat(state.getFirstPlayerPoints()).isEqualTo(0);
             assertThat(state.getSecondPlayerPoints()).isEqualTo(0);
             assertThat(state.getFirstPlayerGames()).isEqualTo(1);
@@ -182,12 +186,12 @@ public class MatchScoreCalculationServiceTest {
         void givenExtendedDeuce_whenDifferenceLessThanTwo_thenNoGameAwarded() {
             givePreDeuceSituation();
 
-            scoreService.pointWon(match, p1); // AD p1
-            scoreService.pointWon(match, p2); // Deuce
-            scoreService.pointWon(match, p2); // AD p2
-            scoreService.pointWon(match, p1); // Deuce
+            scoreService.pointWon(uuid, match, p1); // AD p1
+            scoreService.pointWon(uuid, match, p2); // Deuce
+            scoreService.pointWon(uuid, match, p2); // AD p2
+            scoreService.pointWon(uuid, match, p1); // Deuce
 
-            MatchState state = matchStorageService.getMatchState(match.getId());
+            MatchState state = matchStorageService.getMatchState(uuid);
             assertThat(state.getFirstPlayerGames()).isZero();
             assertThat(state.getSecondPlayerGames()).isZero();
         }
@@ -206,7 +210,7 @@ public class MatchScoreCalculationServiceTest {
             addOneGame(p1);
             addOneGame(p2);
 
-            MatchState state = matchStorageService.getMatchState(match.getId());
+            MatchState state = matchStorageService.getMatchState(uuid);
             assertThat(state.getFirstPlayerGames()).isEqualTo(6);
             assertThat(state.getSecondPlayerGames()).isEqualTo(6);
             assertThat(state.getFirstPlayerSets()).isEqualTo(0);
@@ -221,7 +225,7 @@ public class MatchScoreCalculationServiceTest {
             addOneGame(p1);
             addOneGame(p1);
 
-            MatchState state = matchStorageService.getMatchState(match.getId());
+            MatchState state = matchStorageService.getMatchState(uuid);
             assertThat(state.getFirstPlayerGames()).isEqualTo(0);
             assertThat(state.getSecondPlayerGames()).isEqualTo(0);
             assertThat(state.getFirstPlayerSets()).isEqualTo(1);
@@ -232,7 +236,7 @@ public class MatchScoreCalculationServiceTest {
 
     private void addOneGame(Player player) {
         for (int i = 0; i < 4; i++) {
-            scoreService.pointWon(match, player);
+            scoreService.pointWon(uuid, match, player);
         }
     }
 
@@ -244,8 +248,8 @@ public class MatchScoreCalculationServiceTest {
 
     private void givePreDeuceSituation() {
         for (int i = 0; i < 3; i++) {
-            scoreService.pointWon(match, p1);
-            scoreService.pointWon(match, p2);
+            scoreService.pointWon(uuid, match, p1);
+            scoreService.pointWon(uuid, match, p2);
         }
     }
 
