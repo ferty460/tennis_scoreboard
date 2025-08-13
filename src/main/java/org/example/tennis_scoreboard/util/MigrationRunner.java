@@ -1,8 +1,9 @@
-package org.example.tennis_scoreboard;
+package org.example.tennis_scoreboard.util;
 
-import org.example.tennis_scoreboard.util.PropertiesUtil;
+import lombok.experimental.UtilityClass;
 import org.flywaydb.core.Flyway;
 
+@UtilityClass
 public class MigrationRunner {
 
     public static final String DB_URL_PARAM = "db.url";
