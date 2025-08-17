@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/reset.css">
-    <title>Новый матч | Табло теннисного матча</title>
+    <title>Счет текущего матча | Табло теннисного матча</title>
 </head>
 <body>
 
@@ -29,29 +29,35 @@
     </header>
 
     <main class="main">
-        <h2>Новый матч</h2>
-        <div class="new-match">
-            <div class="new-match__content">
-                <div class="new-match__form">
-                    <form action="" method="post">
-                        <div class="form-group">
-                            <label for="firstPlayerName">Первый игрок</label>
-                            <input type="text" name="firstPlayerName" id="firstPlayerName">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="secondPlayerName">Второй игрок</label>
-                            <input type="text" name="secondPlayerName" id="secondPlayerName">
-                        </div>
-
-                        <button type="submit" class="submit-btn">Начать матч</button>
-                    </form>
-                </div>
-
-                <div class="new-match__image">
-                    <img src="images/tennis.webp" alt="tennis">
-                </div>
-            </div>
+        <h2>Счет текущего матча</h2>
+        <div class="match-score">
+            <table class="match-score-table">
+                <thead>
+                <tr>
+                    <th>Игрок</th>
+                    <th>Сет</th>
+                    <th>Гейм</th>
+                    <th>Очки</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><b>Player name 1</b></td>
+                    <td>0</td>
+                    <td>1</td>
+                    <td>15</td>
+                    <td><a href="" class="action-link">+</a></td>
+                </tr>
+                <tr>
+                    <td><b>Player name 2</b></td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>15</td>
+                    <td><a href="" class="action-link">+</a></td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </main>
 

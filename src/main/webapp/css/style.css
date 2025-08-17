@@ -61,6 +61,7 @@ body {
 .main {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
     flex-grow: 1;
     padding: 0 30px;
@@ -100,9 +101,15 @@ body {
 }
 
 .main-bg img {
-    width: 720px;
+    width: 100%;
     border-radius: 20px;
-    margin: 30px auto;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.main h2 {
+    font-size: 32px;
+    color: #333333;
 }
 
 .new-match__image {
@@ -191,12 +198,62 @@ input {
     gap: 50px;
 }
 
+.footer-inner {
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #7e7e7e;
+}
+
+.footer-info a {
+    color: #333333;
+    font-size: 20px;
+    text-decoration: none;
+}
+
+.footer-info a:hover {
+    text-decoration: underline;
+}
+
+.match-score {
+    font-family: Arial, sans-serif;
+    width: 70%;
+    margin: 30px auto;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.match-score-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.match-score-table th {
+    background-color: #7b7ac5;
+    color: white;
+    padding: 12px 8px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+.match-score-table td {
+    padding: 12px 8px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.match-score-table th:first-child {
+    background-color: #6160a8;
+}
+
+.match-score-table th:not(:first-child) {
+    background-color: #7b7ac5;
+}
+
 @media (max-width: 756px) {
     .navigation-bar a {
         font-size: 16px;
-    }
-    .main-bg img/*, .new-match__image img*/ {
-        width: 70%;
     }
     .action-link {
         font-size: 1rem;
@@ -211,6 +268,9 @@ input {
     .new-match__image {
         width: 100%;
     }
+    .match-score {
+        width: 100%;
+    }
 }
 
 @media (max-width: 450px) {
@@ -219,5 +279,14 @@ input {
     }
     .navigation-bar a {
         font-size: 12px;
+    }
+    .main h2 {
+        font-size: 24px;
+    }
+    .match-score-table {
+        font-size: 12px;
+    }
+    .match-score-table .action-link {
+        padding: 0.5rem 0.5rem;
     }
 }
