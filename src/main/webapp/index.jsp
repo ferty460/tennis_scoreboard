@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -6,8 +6,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/reset.css">
   <title>Главная | Табло теннисного матча</title>
 </head>
 <body>
@@ -30,7 +30,7 @@
 
     <main class="main">
       <div class="main-bg">
-        <img src="images/tennis.webp" alt="tennis">
+        <img src="${pageContext.request.contextPath}/images/tennis.webp" alt="tennis">
         <div class="actions">
           <a href="" class="action-link">Новый матч</a>
           <a href="" class="action-link">Список завершенных матчей</a>
