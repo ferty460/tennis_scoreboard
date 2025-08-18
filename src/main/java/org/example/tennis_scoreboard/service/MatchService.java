@@ -22,7 +22,7 @@ public class MatchService {
         matchRepository.save(match);
     }
 
-    public List<Match> findAll() {
+    public List<Match> getAll() {
         return matchRepository.findAll();
     }
 

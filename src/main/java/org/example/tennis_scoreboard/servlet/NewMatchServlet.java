@@ -35,7 +35,7 @@ public class NewMatchServlet extends HttpServlet {
         this.playerService = context.getBean(PlayerService.class);
 
         // log:
-        System.out.println("Servlet dependencies injected successfully!");
+        System.out.println("[NewMatchServlet] Servlet dependencies injected successfully!");
     }
 
     @Override

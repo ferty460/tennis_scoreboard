@@ -21,8 +21,8 @@
         </div>
         <nav class="navigation-bar">
           <ul>
-            <li><a href="">Новый матч</a></li>
-            <li><a href="">Завершенные матчи</a></li>
+            <li><a href="${pageContext.request.contextPath}/new-match">Новый матч</a></li>
+            <li><a href="${pageContext.request.contextPath}/matches">Завершенные матчи</a></li>
           </ul>
         </nav>
       </div>
@@ -32,8 +32,8 @@
       <div class="main-bg">
         <img src="${pageContext.request.contextPath}/images/tennis.webp" alt="tennis">
         <div class="actions">
-          <a href="" class="action-link">Новый матч</a>
-          <a href="" class="action-link">Список завершенных матчей</a>
+          <a href="${pageContext.request.contextPath}/new-match" class="action-link">Новый матч</a>
+          <a href="${pageContext.request.contextPath}/matches" class="action-link">Список завершенных матчей</a>
         </div>
       </div>
     </main>

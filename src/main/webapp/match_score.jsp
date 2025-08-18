@@ -17,12 +17,12 @@
     <header class="header">
         <div>
             <div class="logo">
-                <h1><a href="#">TABLO</a></h1>
+                <h1><a href="${pageContext.request.contextPath}/">TABLO</a></h1>
             </div>
             <nav class="navigation-bar">
                 <ul>
-                    <li><a href="">Новый матч</a></li>
-                    <li><a href="">Завершенные матчи</a></li>
+                    <li><a href="${pageContext.request.contextPath}/new-match">Новый матч</a></li>
+                    <li><a href="${pageContext.request.contextPath}/matches">Завершенные матчи</a></li>
                 </ul>
             </nav>
         </div>

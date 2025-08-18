@@ -1,4 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -17,12 +19,12 @@
   <header class="header">
     <div>
       <div class="logo">
-        <h1><a href="#">TABLO</a></h1>
+        <h1><a href="${pageContext.request.contextPath}/">TABLO</a></h1>
       </div>
       <nav class="navigation-bar">
         <ul>
-          <li><a href="">Новый матч</a></li>
-          <li><a href="">Завершенные матчи</a></li>
+          <li><a href="${pageContext.request.contextPath}/new-match">Новый матч</a></li>
+          <li><a href="${pageContext.request.contextPath}/matches">Завершенные матчи</a></li>
         </ul>
       </nav>
     </div>
@@ -46,32 +48,19 @@
             <th>Второй игрок</th>
             <th>Победитель</th>
           </tr>
-          <tr>
-            <td>asdsaasd</td>
-            <td>dfxzvxzcv</td>
-            <td>asdsaasd</td>
-          </tr>
-          <tr>
-            <td>asdsaasd</td>
-            <td>dfxzvxzcv</td>
-            <td>asdsaasd</td>
-          </tr>
-          <tr>
-            <td>asdsaasd</td>
-            <td>dfxzvxzcv</td>
-            <td>asdsaasd</td>
-          </tr>
-          <tr>
-            <td>asdsaasd</td>
-            <td>dfxzvxzcv</td>
-            <td>asdsaasd</td>
-          </tr>
-          <tr>
-            <td>asdsaasd</td>
-            <td>dfxzvxzcv</td>
-            <td>asdsaasd</td>
-          </tr>
           </thead>
+          <tbody>
+          <c:if test="${requestScope.matches.isEmpty()}">
+            <span>Никаво нет</span>
+          </c:if>
+          <c:forEach items="${requestScope.matches}" var="match">
+            <tr>
+              <td>${match.getFirstPlayer().getName()}</td>
+              <td>${match.getSecondPlayer().getName()}</td>
+              <td>${match.getWinner().getName()}</td>
+            </tr>
+          </c:forEach>
+          </tbody>
         </table>
       </div>
       <div class="pagination">
