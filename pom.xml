@@ -17,10 +17,15 @@
         <maven.compiler.source>17</maven.compiler.source>
 
         <jakarta.servlet-api.version>6.1.0</jakarta.servlet-api.version>
+        <jakarta.jstl-api.version>3.0.2</jakarta.jstl-api.version>
+        <jakarta.jstl.version>3.0.1</jakarta.jstl.version>
+
         <hibernate.version>7.0.9.Final</hibernate.version>
         <h2.version>2.3.232</h2.version>
         <flyway.version>11.10.1</flyway.version>
+
         <lombok.version>1.18.38</lombok.version>
+
         <junit.version>5.13.4</junit.version>
         <assertj.version>3.27.4</assertj.version>
         <mockito.version>5.18.0</mockito.version>
@@ -33,6 +38,17 @@
             <version>${jakarta.servlet-api.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+            <version>${jakarta.jstl-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+            <version>${jakarta.jstl.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
@@ -49,6 +65,7 @@
             <artifactId>flyway-core</artifactId>
             <version>${flyway.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
