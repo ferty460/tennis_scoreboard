@@ -1,13 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
+<%@ page contentType="text/html;charset=UTF-8" %>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/reset.css">
     <title>Новый матч | Табло теннисного матча</title>
 </head>
 <body>
@@ -49,7 +49,7 @@
                 </div>
 
                 <div class="new-match__image">
-                    <img src="images/tennis.webp" alt="tennis">
+                    <img src="${pageContext.request.contextPath}/images/tennis.webp" alt="tennis">
                 </div>
             </div>
         </div>

@@ -13,6 +13,7 @@ import org.example.tennis_scoreboard.service.MatchService;
 import org.example.tennis_scoreboard.service.MatchStorageService;
 import org.example.tennis_scoreboard.service.PlayerService;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @WebServlet("/new-match")
@@ -35,6 +36,11 @@ public class NewMatchServlet extends HttpServlet {
 
         // log:
         System.out.println("Servlet dependencies injected successfully!");
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.getRequestDispatcher("/new_match.jsp").forward(req, resp);
     }
 
     @Override
