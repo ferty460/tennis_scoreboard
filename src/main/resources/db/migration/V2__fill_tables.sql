@@ -11,7 +11,7 @@ VALUES ('Roger Federer'),
        ('Stefanos Tsitsipas'),
        ('Naomi Osaka');
 
-INSERT INTO match (first_player_id, second_player_id, winner)
+INSERT INTO match (first_player_id, second_player_id, winner_id)
 VALUES (1, 2, 1),
        (3, 7, 7),
        (2, 5, 2),
