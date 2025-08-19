@@ -3,7 +3,8 @@ package org.example.tennis_scoreboard.repository;
 import org.example.tennis_scoreboard.context.Component;
 import org.example.tennis_scoreboard.model.Player;
 import org.example.tennis_scoreboard.util.HibernateUtil;
-import org.hibernate.Session;
+import org.example.tennis_scoreboard.util.TransactionManager;
+import org.hibernate.SessionFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,38 +12,43 @@ import java.util.Optional;
 @Component
 public class PlayerRepositoryImpl implements PlayerRepository {
 
-    private final Session session;
+    private final SessionFactory sessionFactory;
 
     public PlayerRepositoryImpl() {
-        this.session = HibernateUtil.getSessionFactory().openSession();
+        this.sessionFactory = HibernateUtil.getSessionFactory();
     }
 
     @Override
     public Optional<Player> findById(Long id) {
         return Optional.ofNullable(
-                session.find(Player.class, id)
+                TransactionManager.executeReadOnly(sessionFactory, session ->
+                        session.find(Player.class, id)
+                )
         );
     }
 
     @Override
     public List<Player> findAll() {
-        return session.createQuery("select p from Player p", Player.class).list();
+        return TransactionManager.executeReadOnly(sessionFactory, session ->
+                session.createQuery("select m from Player m", Player.class)
+                        .getResultList()
+        );
     }
 
     @Override
     public Player save(Player entity) {
-        session.persist(entity);
+        TransactionManager.executeInTransaction(sessionFactory, session -> session.persist(entity));
         return entity;
     }
 
     @Override
     public void update(Player entity) {
-        session.merge(entity);
+        TransactionManager.executeInTransaction(sessionFactory, session -> session.merge(entity));
     }
 
     @Override
     public void delete(Player entity) {
-        session.remove(entity);
+        TransactionManager.executeInTransaction(sessionFactory, session -> session.remove(entity));
     }
 
 }

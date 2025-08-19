@@ -3,7 +3,8 @@ package org.example.tennis_scoreboard.repository;
 import org.example.tennis_scoreboard.context.Component;
 import org.example.tennis_scoreboard.model.Match;
 import org.example.tennis_scoreboard.util.HibernateUtil;
-import org.hibernate.Session;
+import org.example.tennis_scoreboard.util.TransactionManager;
+import org.hibernate.SessionFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,46 +12,60 @@ import java.util.Optional;
 @Component
 public class MatchRepositoryImpl implements MatchRepository {
 
-    private final Session session;
+    private final SessionFactory sessionFactory;
 
     public MatchRepositoryImpl() {
-        this.session = HibernateUtil.getSessionFactory().openSession();
+        this.sessionFactory = HibernateUtil.getSessionFactory();
     }
 
     @Override
     public Optional<Match> findById(Long id) {
         return Optional.ofNullable(
-                session.find(Match.class, id)
+                TransactionManager.executeReadOnly(sessionFactory, session ->
+                        session.find(Match.class, id)
+                )
         );
     }
 
     @Override
     public List<Match> findAll() {
-        return session.createQuery(
-                "select m from Match m", Match.class
-        ).getResultList();
+        return TransactionManager.executeReadOnly(sessionFactory, session ->
+                session.createQuery(
+                        "select m from Match m " +
+                                "left join fetch m.firstPlayer " +
+                                "left join fetch m.secondPlayer " +
+                                "left join fetch m.winner", Match.class
+                ).getResultList()
+        );
     }
 
     @Override
     public Match save(Match entity) {
-        session.persist(entity);
+        TransactionManager.executeInTransaction(sessionFactory, session -> session.persist(entity));
         return entity;
     }
 
     @Override
     public void update(Match entity) {
-        session.merge(entity);
+        TransactionManager.executeInTransaction(sessionFactory, session -> session.merge(entity));
     }
 
     @Override
     public void delete(Match entity) {
-        session.remove(entity);
+        TransactionManager.executeInTransaction(sessionFactory, session -> session.remove(entity));
     }
 
     @Override
     public List<Match> findAllByWinnerIsNotNull() {
-        return session.createQuery(
-                "select m from Match m where winner is not null", Match.class
-        ).getResultList();
+        return TransactionManager.executeReadOnly(sessionFactory, session ->
+                session.createQuery(
+                        "select m from Match m " +
+                                "left join fetch m.firstPlayer " +
+                                "left join fetch m.secondPlayer " +
+                                "left join fetch m.winner " +
+                                "where m.winner is not null", Match.class
+                ).getResultList()
+        );
     }
+
 }
