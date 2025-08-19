@@ -33,7 +33,7 @@
         <div class="new-match">
             <div class="new-match__content">
                 <div class="new-match__form">
-                    <form action="" method="post">
+                    <form action="new-match" method="post">
                         <div class="form-group">
                             <label for="firstPlayerName">Первый игрок</label>
                             <input type="text" name="firstPlayerName" id="firstPlayerName">

@@ -44,26 +44,28 @@ public class NewMatchServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         PlayersInMatchRequest players = new PlayersInMatchRequest(
                 req.getParameter("firstPlayerName"), req.getParameter("secondPlayerName")
         );
 
         Player firstPlayer = new Player(players.firstPlayerName());
         Player secondPlayer = new Player(players.secondPlayerName());
+        firstPlayer = playerService.save(firstPlayer);
+        secondPlayer = playerService.save(secondPlayer);
+
         Match match = Match.builder()
                 .firstPlayer(firstPlayer)
                 .secondPlayer(secondPlayer)
                 .build();
         UUID uuid = UUID.randomUUID();
 
-        matchStorageService.createMatch(uuid, match);
-        playerService.save(firstPlayer);
-        playerService.save(secondPlayer);
         matchService.save(match);
+        matchStorageService.createMatch(uuid, match);
 
         resp.setCharacterEncoding("UTF-8");
         resp.setStatus(HttpServletResponse.SC_CREATED);
+        resp.sendRedirect(req.getContextPath() + "/match-score?uuid=" + uuid);
     }
 
 }
