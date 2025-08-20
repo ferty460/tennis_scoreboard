@@ -43,17 +43,17 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td><b>Player name 1</b></td>
-                    <td>0</td>
-                    <td>1</td>
-                    <td>15</td>
+                    <td><b>${requestScope.matchState.firstPlayerName()}</b></td>
+                    <td>${requestScope.matchState.firstPlayerSets()}</td>
+                    <td>${requestScope.matchState.firstPlayerGames()}</td>
+                    <td>${requestScope.matchState.firstPlayerPoints()}</td>
                     <td><a href="" class="action-link">+</a></td>
                 </tr>
                 <tr>
-                    <td><b>Player name 2</b></td>
-                    <td>1</td>
-                    <td>2</td>
-                    <td>15</td>
+                    <td><b>${requestScope.matchState.secondPlayerName()}</b></td>
+                    <td>${requestScope.matchState.secondPlayerSets()}</td>
+                    <td>${requestScope.matchState.secondPlayerGames()}</td>
+                    <td>${requestScope.matchState.secondPlayerPoints()}</td>
                     <td><a href="" class="action-link">+</a></td>
                 </tr>
                 </tbody>
