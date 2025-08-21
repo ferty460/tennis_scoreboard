@@ -1,17 +1,25 @@
 package org.example.tennis_scoreboard.service;
 
-import lombok.RequiredArgsConstructor;
+import org.example.tennis_scoreboard.context.Autowired;
+import org.example.tennis_scoreboard.context.Component;
 import org.example.tennis_scoreboard.model.Match;
 import org.example.tennis_scoreboard.model.MatchState;
 import org.example.tennis_scoreboard.model.Player;
 
+import java.util.Objects;
 import java.util.UUID;
 
-@RequiredArgsConstructor
+@Component
 public class MatchScoreCalculationService {
 
     private final MatchService matchService;
     private final MatchStorageService matchStorageService;
+
+    @Autowired
+    public MatchScoreCalculationService(MatchService matchService, MatchStorageService matchStorageService) {
+        this.matchService = matchService;
+        this.matchStorageService = matchStorageService;
+    }
 
     public void pointWon(UUID matchUuid, Match match, Player winner) {
         MatchState state = matchStorageService.getMatchState(matchUuid);
@@ -20,7 +28,7 @@ public class MatchScoreCalculationService {
             throw new IllegalStateException("Match is not active");
         }
 
-        boolean isFirst = winner.equals(match.getFirstPlayer());
+        boolean isFirst = Objects.equals(winner.getId(), match.getFirstPlayer().getId());
         if (isFirst) {
             state.setFirstPlayerPoints(state.getFirstPlayerPoints() + 1);
         } else {
@@ -30,6 +38,8 @@ public class MatchScoreCalculationService {
         checkGameWinner(matchUuid, match, state);
         matchStorageService.updateMatchState(matchUuid, state);
     }
+
+
 
     private void checkGameWinner(UUID matchUuid, Match match, MatchState state) {
         int firstPlayerPoints = state.getFirstPlayerPoints();

@@ -251,6 +251,13 @@ input {
     background-color: #7b7ac5;
 }
 
+.match-score-table tbody tr td form input[type="submit"]:hover {
+    transition: .5s;
+    cursor: pointer;
+    background-color: #7b7ac5;
+    color: #ffffff;
+}
+
 .finished-matches {
     width: 80%;
     font-family: 'Segoe UI', Roboto, sans-serif;
@@ -424,5 +431,9 @@ input {
     }
     .finished-matches-table {
         font-size: 12px;
+    }
+    .match-score-table tbody tr td form input[type="submit"] {
+        font-size: 0.8rem;
+        padding: 5px 10px;
     }
 }

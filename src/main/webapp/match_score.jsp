@@ -37,7 +37,7 @@
                     <th>Игрок</th>
                     <th>Сет</th>
                     <th>Гейм</th>
-                    <th>Очки</th>
+                    <th>Счет</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -47,14 +47,24 @@
                     <td>${requestScope.matchState.firstPlayerSets()}</td>
                     <td>${requestScope.matchState.firstPlayerGames()}</td>
                     <td>${requestScope.matchState.firstPlayerPoints()}</td>
-                    <td><a href="" class="action-link">+</a></td>
+                    <td>
+                        <form action="match-score?uuid=${requestScope.matchState.matchUuid()}" method="post">
+                            <input type="hidden" name="playerId" value="${requestScope.matchState.firstPlayerId()}">
+                            <input type="submit" value="+ Очко">
+                        </form>
+                    </td>
                 </tr>
                 <tr>
                     <td><b>${requestScope.matchState.secondPlayerName()}</b></td>
                     <td>${requestScope.matchState.secondPlayerSets()}</td>
                     <td>${requestScope.matchState.secondPlayerGames()}</td>
                     <td>${requestScope.matchState.secondPlayerPoints()}</td>
-                    <td><a href="" class="action-link">+</a></td>
+                    <td>
+                        <form action="match-score?uuid=${requestScope.matchState.matchUuid()}" method="post">
+                            <input type="hidden" name="playerId" value="${requestScope.matchState.secondPlayerId()}">
+                            <input type="submit" value="+ Очко">
+                        </form>
+                    </td>
                 </tr>
                 </tbody>
             </table>
