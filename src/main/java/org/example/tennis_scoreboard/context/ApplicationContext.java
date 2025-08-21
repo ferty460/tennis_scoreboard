@@ -7,10 +7,13 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ApplicationContext {
 
     private final Map<Class<?>, Object> beans = new HashMap<>();
+    private final List<Class<?>> beanClasses = new ArrayList<>();
 
     public ApplicationContext(Class<?> configClass) {
         if (!configClass.isAnnotationPresent(ComponentScan.class)) {
@@ -20,6 +23,7 @@ public class ApplicationContext {
         String packageName = configClass.getAnnotation(ComponentScan.class).value();
         try {
             scanPackage(packageName);
+            createAllBeans();
             injectDependencies();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -46,8 +50,7 @@ public class ApplicationContext {
                 String className = packageName + '.' + file.getName().replace(".class", "");
                 Class<?> clazz = Class.forName(className);
                 if (clazz.isAnnotationPresent(Component.class)) {
-                    Object instance = createBean(clazz);
-                    registerBean(clazz, instance);
+                    beanClasses.add(clazz);
                 }
             }
             if (file.isDirectory()) {
@@ -56,34 +59,64 @@ public class ApplicationContext {
         }
     }
 
+    private void createAllBeans() throws Exception {
+        for (Class<?> clazz : beanClasses) {
+            if (!beans.containsKey(clazz)) {
+                createBean(clazz);
+            }
+        }
+    }
+
+    private void createBean(Class<?> clazz) throws Exception {
+        if (beans.containsKey(clazz)) {
+            return;
+        }
+
+        Constructor<?> targetConstructor = getConstructor(clazz);
+        Class<?>[] parameterTypes = targetConstructor.getParameterTypes();
+        Object[] dependencies = new Object[parameterTypes.length];
+
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Class<?> dependencyType = parameterTypes[i];
+
+            if (!beans.containsKey(dependencyType)) {
+                Class<?> dependencyClass = findBeanClassByType(dependencyType);
+                if (dependencyClass != null) {
+                    createBean(dependencyClass);
+                } else {
+                    throw new RuntimeException("No bean class found for dependency type: " + dependencyType);
+                }
+            }
+            dependencies[i] = beans.get(dependencyType);
+        }
+
+        targetConstructor.setAccessible(true);
+        Object instance = targetConstructor.newInstance(dependencies);
+        registerBean(clazz, instance);
+    }
+
+    private Class<?> findBeanClassByType(Class<?> type) {
+        for (Class<?> clazz : beanClasses) {
+            if (type.isAssignableFrom(clazz)) {
+                return clazz;
+            }
+        }
+        return null;
+    }
+
     private void injectDependencies() throws IllegalAccessException {
         for (Object bean : beans.values()) {
             for (Field field : bean.getClass().getDeclaredFields()) {
                 if (field.isAnnotationPresent(Autowired.class)) {
                     Object dependency = beans.get(field.getType());
+                    if (dependency == null) {
+                        throw new RuntimeException("No bean found for field injection: " + field.getType());
+                    }
                     field.setAccessible(true);
                     field.set(bean, dependency);
                 }
             }
         }
-    }
-
-    private Object createBean(Class<?> clazz) throws Exception {
-        Constructor<?> targetConstructor = getConstructor(clazz);
-
-        Class<?>[] parameterTypes = targetConstructor.getParameterTypes();
-        Object[] dependencies = new Object[parameterTypes.length];
-
-        for (int i = 0; i < parameterTypes.length; i++) {
-            dependencies[i] = getBean(parameterTypes[i]);
-            if (dependencies[i] == null) {
-                dependencies[i] = createBean(parameterTypes[i]);
-                registerBean(parameterTypes[i], dependencies[i]);
-            }
-        }
-
-        targetConstructor.setAccessible(true);
-        return targetConstructor.newInstance(dependencies);
     }
 
     private void registerBean(Class<?> clazz, Object instance) {
@@ -112,5 +145,4 @@ public class ApplicationContext {
         }
         return targetConstructor;
     }
-
 }
