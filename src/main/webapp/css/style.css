@@ -184,7 +184,7 @@ input {
   text-decoration: none;
   background-color: #7b7ac5;
   color: #ffffff;
-  border-radius: 5px;
+  border-radius: 15px;
   transition: all 0.3s ease;
 }
 
@@ -388,6 +388,72 @@ input {
     color: #6c757d;
 }
 
+.match-result {
+    border-radius: 15px;
+    padding: 25px;
+    margin: 20px 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    color: #ecf0f1;
+    text-align: center;
+}
+
+.result-title {
+    font-size: 2.5em;
+    color: #333333;
+    margin-bottom: 20px;
+    font-family: 'VT323', monospace;
+}
+
+.players-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 25px 0;
+}
+
+.player-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    min-width: 200px;
+    border: 2px solid #3498db;
+}
+
+.player-name {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #3498db;
+    margin-bottom: 10px;
+}
+
+.player-score {
+    font-size: 3em;
+    color: #f1c40f;
+    font-weight: bold;
+}
+
+.vs-separator {
+    font-size: 2em;
+    color: #e74c3c;
+    font-weight: bold;
+    margin: 0 30px;
+}
+
+.winner-badge {
+    background: #27ae60;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 1.2em;
+    margin-top: 15px;
+}
+
+.trophy-icon {
+    font-size: 4em;
+    color: #f1c40f;
+    margin-bottom: 15px;
+}
+
 @media (max-width: 756px) {
     .navigation-bar a {
         font-size: 16px;
@@ -410,6 +476,42 @@ input {
     }
     .filter-block label {
         display: none;
+    }
+    .match-result {
+        padding: 15px;
+        margin: 15px 0;
+    }
+    .result-title {
+        font-size: 2em;
+        margin-bottom: 15px;
+    }
+    .players-container {
+        flex-direction: column;
+        gap: 15px;
+        margin: 15px 0;
+    }
+    .player-card {
+        min-width: 150px;
+        padding: 15px;
+        max-width: 300px;
+    }
+    .player-name {
+        font-size: 1.5em;
+    }
+    .player-score {
+        font-size: 2.5em;
+    }
+    .vs-separator {
+        display: none;
+    }
+    .winner-badge {
+        font-size: 1.1em;
+        padding: 8px 16px;
+        margin: 10px auto;
+    }
+    .trophy-icon {
+        font-size: 3em;
+        margin-bottom: 10px;
     }
 }
 
@@ -435,5 +537,25 @@ input {
     .match-score-table tbody tr td form input[type="submit"] {
         font-size: 0.8rem;
         padding: 5px 10px;
+    }
+    .result-title {
+        font-size: 1.8em;
+    }
+    .player-name {
+        font-size: 1.3em;
+    }
+    .player-score {
+        font-size: 2em;
+    }
+    .winner-badge {
+        font-size: 1em;
+        padding: 6px 12px;
+    }
+    .trophy-icon {
+        font-size: 2.5em;
+    }
+    .player-card {
+        padding: 12px;
+        min-width: 120px;
     }
 }
