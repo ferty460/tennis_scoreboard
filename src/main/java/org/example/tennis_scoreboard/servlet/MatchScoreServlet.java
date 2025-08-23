@@ -53,6 +53,11 @@ public class MatchScoreServlet extends HttpServlet {
 
         MatchStateResponse response = getMatchStateResponse(uuid, matchState, match);
 
+        if (matchState.isFinished()) {
+            calculationService.finishMatch(uuid);
+            req.setAttribute("winner", match.getWinner());
+        }
+        req.setAttribute("isFinished", matchState.isFinished());
         req.setAttribute("matchState", response);
         req.getRequestDispatcher("match_score.jsp").forward(req, resp);
     }
@@ -83,7 +88,8 @@ public class MatchScoreServlet extends HttpServlet {
         int firstPlayerPoints = matchState.getFirstPlayerPoints();
         int secondPlayerPoints = matchState.getSecondPlayerPoints();
 
-        String[] scores = TennisScoreConverter.convertPointsToTennisScore(firstPlayerPoints, secondPlayerPoints).split("-");
+        String[] scores = TennisScoreConverter.convertPointsToTennisScore(firstPlayerPoints, secondPlayerPoints)
+                .split("-");
         String firstPlayerPointsStr = scores[0];
         String secondPlayerPointsStr = scores[1];
 

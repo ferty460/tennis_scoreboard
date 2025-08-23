@@ -35,13 +35,11 @@ public class MatchScoreCalculationService {
             state.setSecondPlayerPoints(state.getSecondPlayerPoints() + 1);
         }
 
-        checkGameWinner(matchUuid, match, state);
+        checkGameWinner(match, state);
         matchStorageService.updateMatchState(matchUuid, state);
     }
 
-
-
-    private void checkGameWinner(UUID matchUuid, Match match, MatchState state) {
+    private void checkGameWinner(Match match, MatchState state) {
         int firstPlayerPoints = state.getFirstPlayerPoints();
         int secondPlayerPoints = state.getSecondPlayerPoints();
 
@@ -55,11 +53,11 @@ public class MatchScoreCalculationService {
             state.setFirstPlayerPoints(0);
             state.setSecondPlayerPoints(0);
 
-            checkSetWinner(matchUuid, match, state);
+            checkSetWinner(match, state);
         }
     }
 
-    private void checkSetWinner(UUID matchUuid, Match match, MatchState state) {
+    private void checkSetWinner(Match match, MatchState state) {
         int firstPlayerGames = state.getFirstPlayerGames();
         int secondPlayerGames = state.getSecondPlayerGames();
 
@@ -73,24 +71,23 @@ public class MatchScoreCalculationService {
             state.setFirstPlayerGames(0);
             state.setSecondPlayerGames(0);
 
-            checkMatchWinner(matchUuid, match, state);
+            checkMatchWinner(match, state);
         }
     }
 
-    private void checkMatchWinner(UUID matchUuid, Match match, MatchState state) {
+    private void checkMatchWinner(Match match, MatchState state) {
         if (state.getFirstPlayerSets() == 2) {
             match.setWinner(match.getFirstPlayer());
             state.setFinished(true);
-            finishMatch(matchUuid, match);
+            matchService.update(match);
         } else if (state.getSecondPlayerSets() == 2) {
             match.setWinner(match.getSecondPlayer());
             state.setFinished(true);
-            finishMatch(matchUuid, match);
+            matchService.update(match);
         }
     }
 
-    private void finishMatch(UUID matchUuid, Match match) {
-        matchService.save(match);
+    public void finishMatch(UUID matchUuid) {
         matchStorageService.removeMatch(matchUuid);
     }
 
