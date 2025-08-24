@@ -2,10 +2,8 @@ package org.example.tennis_scoreboard.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.tennis_scoreboard.context.ApplicationContext;
 import org.example.tennis_scoreboard.dto.MatchStateResponse;
 import org.example.tennis_scoreboard.model.Match;
 import org.example.tennis_scoreboard.model.MatchState;
@@ -20,28 +18,12 @@ import java.io.IOException;
 import java.util.UUID;
 
 @WebServlet("/match-score")
-public class MatchScoreServlet extends HttpServlet {
+public class MatchScoreServlet extends InjectableHttpServlet {
 
     private MatchScoreCalculationService calculationService;
     private MatchStorageService matchStorageService;
     private MatchService matchService;
     private PlayerService playerService;
-
-    @Override
-    public void init() throws ServletException {
-        ApplicationContext context = (ApplicationContext) getServletContext().getAttribute("applicationContext");
-        if (context == null) {
-            throw new ServletException("ApplicationContext is null!");
-        }
-
-        this.calculationService = context.getBean(MatchScoreCalculationService.class);
-        this.matchStorageService = context.getBean(MatchStorageService.class);
-        this.matchService = context.getBean(MatchService.class);
-        this.playerService = context.getBean(PlayerService.class);
-
-        // log:
-        System.out.println("[MatchScoreServlet] Servlet dependencies injected successfully!");
-    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

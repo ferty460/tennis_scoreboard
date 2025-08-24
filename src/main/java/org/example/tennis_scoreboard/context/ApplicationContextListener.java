@@ -3,12 +3,14 @@ package org.example.tennis_scoreboard.context;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
+import lombok.extern.slf4j.Slf4j;
 import org.example.tennis_scoreboard.config.AppConfig;
 import org.example.tennis_scoreboard.util.MigrationRunner;
 import org.h2.tools.Server;
 
 import java.sql.SQLException;
 
+@Slf4j
 @WebListener
 public class ApplicationContextListener implements ServletContextListener {
 
@@ -26,16 +28,14 @@ public class ApplicationContextListener implements ServletContextListener {
             throw new RuntimeException(e);
         }
 
-        // log: ApplicationContext initialized
-        System.out.println("ApplicationContext initialized!");
+        log.info("Application context initialized successfully!");
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         sce.getServletContext().removeAttribute("applicationContext");
 
-        // log: ApplicationContext destroyed
-        System.out.println("ApplicationContext destroyed!");
+        log.info("Application context destroyed successfully!");
     }
 
 }

@@ -2,10 +2,9 @@ package org.example.tennis_scoreboard.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.tennis_scoreboard.context.ApplicationContext;
+import lombok.extern.slf4j.Slf4j;
 import org.example.tennis_scoreboard.dto.PlayersInMatchRequest;
 import org.example.tennis_scoreboard.model.Match;
 import org.example.tennis_scoreboard.model.Player;
@@ -16,27 +15,13 @@ import org.example.tennis_scoreboard.service.PlayerService;
 import java.io.IOException;
 import java.util.UUID;
 
+@Slf4j
 @WebServlet("/new-match")
-public class NewMatchServlet extends HttpServlet {
+public class NewMatchServlet extends InjectableHttpServlet {
 
     private MatchStorageService matchStorageService;
     private MatchService matchService;
     private PlayerService playerService;
-
-    @Override
-    public void init() throws ServletException {
-        ApplicationContext context = (ApplicationContext) getServletContext().getAttribute("applicationContext");
-        if (context == null) {
-            throw new ServletException("ApplicationContext is null!");
-        }
-
-        this.matchStorageService = context.getBean(MatchStorageService.class);
-        this.matchService = context.getBean(MatchService.class);
-        this.playerService = context.getBean(PlayerService.class);
-
-        // log:
-        System.out.println("[NewMatchServlet] Servlet dependencies injected successfully!");
-    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -63,8 +48,6 @@ public class NewMatchServlet extends HttpServlet {
         matchService.save(match);
         matchStorageService.createMatch(uuid, match);
 
-        resp.setCharacterEncoding("UTF-8");
-        resp.setStatus(HttpServletResponse.SC_CREATED);
         resp.sendRedirect(req.getContextPath() + "/match-score?uuid=" + uuid);
     }
 

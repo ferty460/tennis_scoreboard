@@ -1,5 +1,8 @@
 package org.example.tennis_scoreboard.context;
 
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -10,8 +13,10 @@ import java.util.Objects;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class ApplicationContext {
 
+    @Getter
     private final Map<Class<?>, Object> beans = new HashMap<>();
     private final List<Class<?>> beanClasses = new ArrayList<>();
 
