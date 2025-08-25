@@ -10,21 +10,29 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Entity
+@NamedEntityGraph(
+        name = "Match.withPlayers",
+        attributeNodes = {
+                @NamedAttributeNode("firstPlayer"),
+                @NamedAttributeNode("secondPlayer"),
+                @NamedAttributeNode("winner")
+        }
+)
 public class Match {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "first_player_id")
     private Player firstPlayer;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "second_player_id")
     private Player secondPlayer;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "winner_id")
     private Player winner;
 
