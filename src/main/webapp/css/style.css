@@ -454,6 +454,40 @@ input {
     margin-bottom: 15px;
 }
 
+.error-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    padding: 2rem;
+}
+
+.error-content {
+    text-align: center;
+    padding: 3rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.error-title {
+    font-family: 'VT323', monospace;
+    font-size: 8rem;
+    margin: 0;
+    text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+}
+
+.error-message {
+    font-size: 2rem;
+    margin: 1rem 0;
+    font-weight: 600;
+}
+
+.error-description {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
 @media (max-width: 756px) {
     .navigation-bar a {
         font-size: 16px;
@@ -513,6 +547,15 @@ input {
         font-size: 3em;
         margin-bottom: 10px;
     }
+    .error-title {
+        font-size: 6rem;
+    }
+    .error-message {
+        font-size: 1.5rem;
+    }
+    .error-content {
+        padding: 2rem;
+    }
 }
 
 @media (max-width: 450px) {
@@ -557,5 +600,17 @@ input {
     .player-card {
         padding: 12px;
         min-width: 120px;
+    }
+    .error-title {
+        font-size: 4rem;
+    }
+    .error-message {
+        font-size: 1.2rem;
+    }
+    .error-content {
+        padding: 1.5rem;
+    }
+    .error-button {
+        padding: 10px 20px;
     }
 }
