@@ -6,6 +6,7 @@ import org.example.tennis_scoreboard.model.Match;
 import org.example.tennis_scoreboard.repository.MatchRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class MatchService {
@@ -29,11 +30,14 @@ public class MatchService {
         return matchRepository.findAllByWinnerIsNotNull();
     }
 
-    public Match getMatchById(long id) {
-        if (matchRepository.findById(id).isPresent()) {
-            return matchRepository.findById(id).get();
+    public Match getById(long id) {
+        Optional<Match> matchOptional = matchRepository.findById(id);
+
+        if (matchOptional.isPresent()) {
+            return matchOptional.get();
         }
-        throw new RuntimeException("Could not find match with id " + id);
+
+        throw new RuntimeException("Match with id " + id + " not found");
     }
 
     public void update(Match match) {

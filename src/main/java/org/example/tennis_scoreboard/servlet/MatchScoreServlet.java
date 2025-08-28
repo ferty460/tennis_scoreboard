@@ -31,7 +31,7 @@ public class MatchScoreServlet extends InjectableHttpServlet {
         UUID uuid = UUID.fromString(uuidStr);
 
         MatchState matchState = matchStorageService.getMatchState(uuid);
-        Match match = matchService.getMatchById(matchState.getMatchId());
+        Match match = matchService.getById(matchState.getMatchId());
 
         MatchStateResponse response = getMatchStateResponse(uuid, matchState, match);
 
@@ -52,7 +52,7 @@ public class MatchScoreServlet extends InjectableHttpServlet {
 
         MatchState matchState = matchStorageService.getMatchState(matchUuid);
         Player winner = playerService.getById(Long.parseLong(playerIdStr));
-        Match match = matchService.getMatchById(matchState.getMatchId());
+        Match match = matchService.getById(matchState.getMatchId());
 
         calculationService.pointWon(matchUuid, match, winner);
         resp.sendRedirect(req.getContextPath() + "/match-score?uuid=" + matchUuid);

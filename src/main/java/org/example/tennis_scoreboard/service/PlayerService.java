@@ -6,6 +6,7 @@ import org.example.tennis_scoreboard.model.Player;
 import org.example.tennis_scoreboard.repository.PlayerRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class PlayerService {
@@ -22,11 +23,13 @@ public class PlayerService {
     }
 
     public Player getById(long id) {
-        if (playerRepository.findById(id).isEmpty()) {
-            throw new RuntimeException("Player with id " + id + " not found");
+        Optional<Player> playerOptional = playerRepository.findById(id);
+
+        if (playerOptional.isPresent()) {
+            return playerOptional.get();
         }
 
-        return playerRepository.findById(id).get();
+        throw new RuntimeException("Player with id " + id + " not found");
     }
 
     public Player save(Player player) {
