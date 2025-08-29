@@ -1,6 +1,8 @@
 package org.example.tennis_scoreboard.service;
 
 import org.example.tennis_scoreboard.context.Component;
+import org.example.tennis_scoreboard.dto.MatchDto;
+import org.example.tennis_scoreboard.mapper.MatchMapper;
 import org.example.tennis_scoreboard.model.Match;
 import org.example.tennis_scoreboard.model.MatchState;
 
@@ -12,12 +14,14 @@ import java.util.UUID;
 public class MatchStorageService {
 
     private final Map<UUID, MatchState> matches;
+    private final MatchMapper matchMapper = MatchMapper.INSTANCE;
 
     public MatchStorageService() {
         matches = new HashMap<>();
     }
 
-    public void createMatch(UUID uuid, Match match) {
+    public void createMatch(UUID uuid, MatchDto matchDto) {
+        Match match = matchMapper.toEntity(matchDto);
         matches.put(uuid, MatchState.builder()
                 .matchId(match.getId())
                 .build());
@@ -27,7 +31,7 @@ public class MatchStorageService {
         if (matches.containsKey(uuid)) {
             return matches.get(uuid);
         }
-        throw new IllegalStateException("Match not found");
+        throw new IllegalStateException("Match with uuid " + uuid + " not found");
     }
 
     public void updateMatchState(UUID uuid, MatchState match) {

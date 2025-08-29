@@ -55,9 +55,9 @@
           </c:if>
           <c:forEach items="${requestScope.matches}" var="match">
             <tr>
-              <td>${match.getFirstPlayer().getName()}</td>
-              <td>${match.getSecondPlayer().getName()}</td>
-              <td>${match.getWinner().getName()}</td>
+              <td>${match.firstPlayerName()}</td>
+              <td>${match.secondPlayerName()}</td>
+              <td>${match.winnerName()}</td>
             </tr>
           </c:forEach>
           </tbody>

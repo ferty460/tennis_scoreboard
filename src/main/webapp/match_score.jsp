@@ -95,7 +95,7 @@
                 </div>
 
                 <div class="winner-badge">
-                    ПОБЕДИТЕЛЬ: <c:if test="${requestScope.winner != null}">${requestScope.winner.getName()}</c:if>
+                    ПОБЕДИТЕЛЬ: <c:if test="${requestScope.winner != null}">${requestScope.winner.name()}</c:if>
                 </div>
 
                 <a href="${pageContext.request.contextPath}/matches" class="action-link">

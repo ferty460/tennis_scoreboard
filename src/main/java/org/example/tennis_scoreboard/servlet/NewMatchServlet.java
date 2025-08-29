@@ -5,9 +5,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.example.tennis_scoreboard.dto.MatchDto;
+import org.example.tennis_scoreboard.dto.PlayerDto;
 import org.example.tennis_scoreboard.dto.PlayersInMatchRequest;
-import org.example.tennis_scoreboard.model.Match;
-import org.example.tennis_scoreboard.model.Player;
 import org.example.tennis_scoreboard.service.MatchService;
 import org.example.tennis_scoreboard.service.MatchStorageService;
 import org.example.tennis_scoreboard.service.PlayerService;
@@ -34,19 +34,16 @@ public class NewMatchServlet extends InjectableHttpServlet {
                 req.getParameter("firstPlayerName"), req.getParameter("secondPlayerName")
         );
 
-        Player firstPlayer = new Player(players.firstPlayerName());
-        Player secondPlayer = new Player(players.secondPlayerName());
-        firstPlayer = playerService.save(firstPlayer);
-        secondPlayer = playerService.save(secondPlayer);
+        PlayerDto firstPlayerDto = new PlayerDto(null, players.firstPlayerName());
+        PlayerDto secondPlayerDto = new PlayerDto(null, players.secondPlayerName());
+        firstPlayerDto = playerService.save(firstPlayerDto);
+        secondPlayerDto = playerService.save(secondPlayerDto);
 
-        Match match = Match.builder()
-                .firstPlayer(firstPlayer)
-                .secondPlayer(secondPlayer)
-                .build();
+        MatchDto matchDto = new MatchDto(null, firstPlayerDto, secondPlayerDto, null);
         UUID uuid = UUID.randomUUID();
 
-        matchService.save(match);
-        matchStorageService.createMatch(uuid, match);
+        matchDto = matchService.save(matchDto);
+        matchStorageService.createMatch(uuid, matchDto);
 
         resp.sendRedirect(req.getContextPath() + "/match-score?uuid=" + uuid);
     }

@@ -4,10 +4,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.tennis_scoreboard.dto.MatchDto;
 import org.example.tennis_scoreboard.dto.MatchStateResponse;
-import org.example.tennis_scoreboard.model.Match;
+import org.example.tennis_scoreboard.dto.PlayerDto;
 import org.example.tennis_scoreboard.model.MatchState;
-import org.example.tennis_scoreboard.model.Player;
 import org.example.tennis_scoreboard.service.MatchScoreCalculationService;
 import org.example.tennis_scoreboard.service.MatchService;
 import org.example.tennis_scoreboard.service.MatchStorageService;
@@ -31,13 +31,13 @@ public class MatchScoreServlet extends InjectableHttpServlet {
         UUID uuid = UUID.fromString(uuidStr);
 
         MatchState matchState = matchStorageService.getMatchState(uuid);
-        Match match = matchService.getById(matchState.getMatchId());
+        MatchDto match = matchService.getById(matchState.getMatchId());
 
         MatchStateResponse response = getMatchStateResponse(uuid, matchState, match);
 
         if (matchState.isFinished()) {
             calculationService.finishMatch(uuid);
-            req.setAttribute("winner", match.getWinner());
+            req.setAttribute("winner", match.winner());
         }
         req.setAttribute("isFinished", matchState.isFinished());
         req.setAttribute("matchState", response);
@@ -51,18 +51,18 @@ public class MatchScoreServlet extends InjectableHttpServlet {
         UUID matchUuid = UUID.fromString(uuidStr);
 
         MatchState matchState = matchStorageService.getMatchState(matchUuid);
-        Player winner = playerService.getById(Long.parseLong(playerIdStr));
-        Match match = matchService.getById(matchState.getMatchId());
+        PlayerDto winner = playerService.getById(Long.parseLong(playerIdStr));
+        MatchDto match = matchService.getById(matchState.getMatchId());
 
         calculationService.pointWon(matchUuid, match, winner);
         resp.sendRedirect(req.getContextPath() + "/match-score?uuid=" + matchUuid);
     }
 
-    private MatchStateResponse getMatchStateResponse(UUID matchUuid, MatchState matchState, Match match) {
-        long firstPlayerId = match.getFirstPlayer().getId();
-        long secondPlayerId = match.getSecondPlayer().getId();
-        String firstPlayerName = match.getFirstPlayer().getName();
-        String secondPlayerName = match.getSecondPlayer().getName();
+    private MatchStateResponse getMatchStateResponse(UUID matchUuid, MatchState matchState, MatchDto matchDto) {
+        long firstPlayerId = matchDto.firstPlayer().id();
+        long secondPlayerId = matchDto.secondPlayer().id();
+        String firstPlayerName = matchDto.firstPlayer().name();
+        String secondPlayerName = matchDto.secondPlayer().name();
         int firstPlayerSets = matchState.getFirstPlayerSets();
         int secondPlayerSets = matchState.getSecondPlayerSets();
         int firstPlayerGames = matchState.getFirstPlayerGames();

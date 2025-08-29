@@ -1,12 +1,13 @@
 package org.example.tennis_scoreboard.service;
 
-import org.example.tennis_scoreboard.model.Match;
+import org.example.tennis_scoreboard.dto.MatchDto;
+import org.example.tennis_scoreboard.dto.PlayerDto;
 import org.example.tennis_scoreboard.model.MatchState;
-import org.example.tennis_scoreboard.model.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.UUID;
 
@@ -18,28 +19,26 @@ public class MatchScoreCalculationServiceTest {
 
     private MatchStorageService matchStorageService;
     private MatchScoreCalculationService scoreService;
+    private MatchService matchService;
 
-    private Player p1;
-    private Player p2;
-    private Match match;
+    private PlayerDto p1;
+    private PlayerDto p2;
+    private MatchDto match;
     private UUID uuid;
 
     @BeforeEach
     void setUp() {
-        MatchService matchService = mock(MatchService.class);
+        matchService = mock(MatchService.class);
         matchStorageService = new MatchStorageService();
         scoreService = new MatchScoreCalculationService(matchService, matchStorageService);
 
-        p1 = new Player(1L, "Fedorino Cappuccino");
-        p2 = new Player(2L, "Sudak Tudak");
+        p1 = new PlayerDto(1L, "Fedorino Cappuccino");
+        p2 = new PlayerDto(2L, "Sudak Tudak");
 
         uuid = UUID.randomUUID();
-        match = Match.builder()
-                .id(1L)
-                .firstPlayer(p1)
-                .secondPlayer(p2)
-                .build();
+        match = new MatchDto(1L, p1, p2, null);
 
+        when(matchService.getById(1L)).thenReturn(match);
         matchStorageService.createMatch(uuid, match);
     }
 
@@ -108,6 +107,7 @@ public class MatchScoreCalculationServiceTest {
         @Test
         @DisplayName("Given ongoing match — when second player wins two sets — then second player is winner")
         void givenOngoingMatch_whenSecondPlayerWinsTwoSets_thenWinnerIsSecondPlayer() {
+            ArgumentCaptor<MatchDto> matchCaptor = ArgumentCaptor.forClass(MatchDto.class);
             for (int set = 0; set < 2; set++) {
                 for (int i = 0; i < 6; i++) {
                     addOneGame(p2);
@@ -115,9 +115,12 @@ public class MatchScoreCalculationServiceTest {
             }
 
             MatchState state = matchStorageService.getMatchState(uuid);
-
-            assertThat(match.getWinner()).isEqualTo(p2);
             assertThat(state.isFinished()).isTrue();
+
+            verify(matchService).update(matchCaptor.capture());
+
+            MatchDto updatedMatch = matchCaptor.getValue();
+            assertThat(updatedMatch.winner()).isEqualTo(p2);
         }
 
         @Test
@@ -142,7 +145,7 @@ public class MatchScoreCalculationServiceTest {
 
             assertThatThrownBy(() -> scoreService.pointWon(uuid, match, p1))
                     .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("Match not found");
+                    .hasMessageContaining("Match with uuid "+ uuid + " not found");
         }
 
     }
@@ -234,13 +237,13 @@ public class MatchScoreCalculationServiceTest {
 
     }
 
-    private void addOneGame(Player player) {
+    private void addOneGame(PlayerDto player) {
         for (int i = 0; i < 4; i++) {
             scoreService.pointWon(uuid, match, player);
         }
     }
 
-    private void addOneSet(Player player) {
+    private void addOneSet(PlayerDto player) {
         for (int i = 0; i < 6; i++) {
             addOneGame(player);
         }
