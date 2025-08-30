@@ -6,6 +6,14 @@ import java.util.List;
 
 public interface MatchRepository extends CrudRepository<Long, Match> {
 
-    List<Match> findAllByWinnerIsNotNull();
+    List<Match> findAllByPlayerNamePaged(String playerName, int page);
+
+    List<Match> findAllByPlayerName(String playerName);
+
+    List<Match> findAllPaged(int page);
+
+    long countAll();
+
+    long countAllByPlayerName(String playerName);
 
 }

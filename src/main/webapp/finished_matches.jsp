@@ -36,7 +36,14 @@
       <div class="filter-block">
         <form action="" method="get">
           <label for="filterByName">Фильтр по имени</label>
-          <input type="search" name="filterByName" id="filterByName" placeholder="Фильтр по имени">
+          <input
+                  type="search"
+                  name="filter_by_player_name"
+                  id="filterByName"
+                  placeholder="Фильтр по имени"
+                  value="${not empty param.filter_by_player_name ? param.filter_by_player_name : ''}"
+          >
+          <button type="submit"></button>
           <button type="reset"></button>
         </form>
       </div>
@@ -51,7 +58,9 @@
           </thead>
           <tbody>
           <c:if test="${requestScope.matches.isEmpty()}">
-            <span>Никаво нет</span>
+            <tr>
+              <td colspan="3" style="text-align: center;">Матчи не найдены</td>
+            </tr>
           </c:if>
           <c:forEach items="${requestScope.matches}" var="match">
             <tr>
@@ -63,19 +72,42 @@
           </tbody>
         </table>
       </div>
-      <div class="pagination">
-        <button class="pagination-arrow" disabled>
-          &laquo;
-        </button>
-        <button class="pagination-page active">1</button>
-        <button class="pagination-page">2</button>
-        <button class="pagination-page">3</button>
-        <span class="pagination-dots">...</span>
-        <button class="pagination-page">8</button>
-        <button class="pagination-arrow">
-          &raquo;
-        </button>
-      </div>
+      <c:if test="${requestScope.pagination.totalPages > 1}">
+        <div class="pagination">
+          <c:choose>
+            <c:when test="${requestScope.pagination.hasPrevious()}">
+              <a href="?page=${requestScope.pagination.previousPage}<c:if test="${not empty requestScope.currentFilter}">&filter_by_player_name=${requestScope.currentFilter}</c:if>"
+                 class="pagination-arrow">&laquo;</a>
+            </c:when>
+            <c:otherwise>
+              <span class="pagination-arrow disabled">&laquo;</span>
+            </c:otherwise>
+          </c:choose>
+
+          <c:forEach begin="1" end="${requestScope.pagination.totalPages}" var="i">
+            <c:choose>
+              <c:when test="${i == requestScope.pagination.currentPage}">
+                <span class="pagination-page active">${i}</span>
+              </c:when>
+              <c:otherwise>
+                <a href="?page=${i}<c:if test="${not empty requestScope.currentFilter}">&filter_by_player_name=${requestScope.currentFilter}</c:if>"
+                   class="pagination-page">${i}</a>
+              </c:otherwise>
+            </c:choose>
+          </c:forEach>
+
+          <c:choose>
+            <c:when test="${requestScope.pagination.hasNext()}">
+              <a href="?page=${requestScope.pagination.nextPage}<c:if test="${not empty requestScope.currentFilter}">&filter_by_player_name=${requestScope.currentFilter}</c:if>"
+                 class="pagination-arrow">&raquo;</a>
+            </c:when>
+            <c:otherwise>
+              <span class="pagination-arrow disabled">&raquo;</span>
+            </c:otherwise>
+          </c:choose>
+        </div>
+      </c:if>
+
     </div>
   </main>
 

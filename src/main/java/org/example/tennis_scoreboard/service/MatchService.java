@@ -6,10 +6,14 @@ import org.example.tennis_scoreboard.dto.FinishedMatchDto;
 import org.example.tennis_scoreboard.dto.MatchDto;
 import org.example.tennis_scoreboard.mapper.MatchMapper;
 import org.example.tennis_scoreboard.model.Match;
+import org.example.tennis_scoreboard.model.PaginationResult;
 import org.example.tennis_scoreboard.repository.MatchRepository;
+import org.flywaydb.core.internal.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
+
+import static org.example.tennis_scoreboard.repository.MatchRepositoryImpl.DEFAULT_LIMIT;
 
 @Component
 public class MatchService {
@@ -26,9 +30,30 @@ public class MatchService {
         return matchRepository.findAll();
     }
 
-    public List<FinishedMatchDto> getAllFinishedMatches() {
-        List<Match> finishedMatches = matchRepository.findAllByWinnerIsNotNull();
-        return mapper.toFinishedMatchDtoList(finishedMatches);
+    public PaginationResult<FinishedMatchDto> getAllFinishedMatches(String pageStr, String playerName) {
+        int page = 1;
+        if (StringUtils.hasText(pageStr)) {
+            try {
+                page = Integer.parseInt(pageStr);
+                if (page < 1) page = 1;
+            } catch (NumberFormatException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        List<Match> finishedMatches;
+        long totalCount;
+
+        if (StringUtils.hasText(playerName)) {
+            finishedMatches = matchRepository.findAllByPlayerNamePaged(playerName, page);
+            totalCount = matchRepository.countAllByPlayerName(playerName);
+        } else {
+            finishedMatches = matchRepository.findAllPaged(page);
+            totalCount = matchRepository.countAll();
+        }
+
+        List<FinishedMatchDto> dtos = mapper.toFinishedMatchDtoList(finishedMatches);
+        return new PaginationResult<>(dtos, page, totalCount, DEFAULT_LIMIT);
     }
 
     public MatchDto getById(long id) {

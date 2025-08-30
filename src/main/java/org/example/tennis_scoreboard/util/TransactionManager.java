@@ -31,7 +31,7 @@ public class TransactionManager {
         try (Session session = sessionFactory.openSession()) {
             return sessionFunction.apply(session);
         } catch (Exception e) {
-            throw new RuntimeException("Operation failed", e);
+            throw new RuntimeException("Transaction failed", e);
         }
     }
 
