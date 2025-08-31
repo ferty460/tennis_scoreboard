@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/reset.css">
-    <title>Ошибка ${pageContext.errorData.statusCode} | Табло теннисного матча</title>
+    <title>Ошибка ${not empty requestScope.statusCode ? requestScope.statusCode : pageContext.errorData.statusCode} | Табло теннисного матча</title>
 </head>
 <body>
 
@@ -33,26 +33,20 @@
     <main class="main">
         <div class="error-container">
             <div class="error-content">
-                <h1 class="error-title">${pageContext.errorData.statusCode}</h1>
-                <p class="error-message">
-                    <c:choose>
-                        <c:when test="${pageContext.errorData.statusCode == 404}">
-                            Страница не найдена.
-                        </c:when>
-                        <c:when test="${pageContext.errorData.statusCode == 500}">
-                            Ошибка на стороне сервера.
-                        </c:when>
-
-                        <c:otherwise>
-                            Произошла непредвиденная ошибка. Пожалуйста, не пробуйте позже.
-                        </c:otherwise>
-                    </c:choose>
-                </p>
-                <c:if test="${not empty pageContext.errorData.throwable}">
-                    <p class="error-description">
+                <h1 class="error-title">
+                    ${not empty requestScope.statusCode ? requestScope.statusCode : pageContext.errorData.statusCode}
+                </h1>
+                <c:if test="${not empty requestScope.errorMessage}">
+                    <p class="error-message">
+                            ${requestScope.errorMessage}
+                    </p>
+                </c:if>
+                <c:if test="${empty requestScope.errorMessage and not empty pageContext.errorData.throwable}">
+                    <p class="error-message">
                             ${pageContext.errorData.throwable.message}
                     </p>
                 </c:if>
+
                 <a href="${pageContext.request.contextPath}/" class="action-link">Вернуться на главную</a>
             </div>
         </div>

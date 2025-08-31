@@ -23,6 +23,7 @@ public class ApplicationContext {
 
     public ApplicationContext(Class<?> configClass) {
         if (!configClass.isAnnotationPresent(ComponentScan.class)) {
+            log.error("No @ComponentScan on config class");
             throw new ContextException("No @ComponentScan on config class");
         }
 
@@ -41,6 +42,7 @@ public class ApplicationContext {
         if (beans.containsKey(type)) {
             return type.cast(beans.get(type));
         }
+        log.error("No bean found for type {}", type);
         throw new ContextException("No bean found for type " + type);
     }
 
