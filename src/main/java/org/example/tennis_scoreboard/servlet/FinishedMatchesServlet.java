@@ -28,7 +28,7 @@ public class FinishedMatchesServlet extends InjectableHttpServlet {
         req.setAttribute("pagination", result);
         req.setAttribute("currentFilter", playerName);
 
-        req.getRequestDispatcher("finished_matches.jsp").forward(req, resp);
+        req.getRequestDispatcher("WEB-INF/finished_matches.jsp").forward(req, resp);
     }
 
 }

@@ -41,7 +41,7 @@ public class MatchScoreServlet extends InjectableHttpServlet {
         }
         req.setAttribute("isFinished", matchState.isFinished());
         req.setAttribute("matchState", response);
-        req.getRequestDispatcher("match_score.jsp").forward(req, resp);
+        req.getRequestDispatcher("WEB-INF/match_score.jsp").forward(req, resp);
     }
 
     @Override

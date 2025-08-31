@@ -25,7 +25,7 @@ public class NewMatchServlet extends InjectableHttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("/new_match.jsp").forward(req, resp);
+        req.getRequestDispatcher("WEB-INF/new_match.jsp").forward(req, resp);
     }
 
     @Override
