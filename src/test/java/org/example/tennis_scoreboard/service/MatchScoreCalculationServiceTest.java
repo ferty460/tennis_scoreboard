@@ -2,6 +2,7 @@ package org.example.tennis_scoreboard.service;
 
 import org.example.tennis_scoreboard.dto.MatchDto;
 import org.example.tennis_scoreboard.dto.PlayerDto;
+import org.example.tennis_scoreboard.exception.NotFoundException;
 import org.example.tennis_scoreboard.model.MatchState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -134,8 +135,8 @@ public class MatchScoreCalculationServiceTest {
             assertThat(matchStorageService.getMatchState(uuid).isFinished()).isTrue();
 
             assertThatThrownBy(() -> scoreService.pointWon(uuid, match, p1))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("Match is not active");
+                    .isInstanceOf(NotFoundException.class)
+                    .hasMessageContaining("No such match or it is already finished");
         }
 
         @Test
@@ -144,8 +145,8 @@ public class MatchScoreCalculationServiceTest {
             matchStorageService.removeMatch(uuid);
 
             assertThatThrownBy(() -> scoreService.pointWon(uuid, match, p1))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("Match with uuid "+ uuid + " not found");
+                    .isInstanceOf(NotFoundException.class)
+                    .hasMessageContaining("No match with uuid " + uuid + " or it is already finished");
         }
 
     }

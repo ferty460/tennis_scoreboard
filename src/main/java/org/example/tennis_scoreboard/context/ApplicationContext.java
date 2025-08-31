@@ -2,6 +2,7 @@ package org.example.tennis_scoreboard.context;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.example.tennis_scoreboard.exception.ContextException;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -22,7 +23,7 @@ public class ApplicationContext {
 
     public ApplicationContext(Class<?> configClass) {
         if (!configClass.isAnnotationPresent(ComponentScan.class)) {
-            throw new RuntimeException("No @ComponentScan on config class");
+            throw new ContextException("No @ComponentScan on config class");
         }
 
         String packageName = configClass.getAnnotation(ComponentScan.class).value();
@@ -31,7 +32,8 @@ public class ApplicationContext {
             createAllBeans();
             injectDependencies();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error(e.getMessage(), e);
+            throw new ContextException(e.getMessage());
         }
     }
 
@@ -39,7 +41,7 @@ public class ApplicationContext {
         if (beans.containsKey(type)) {
             return type.cast(beans.get(type));
         }
-        throw new RuntimeException("No bean found for type " + type);
+        throw new ContextException("No bean found for type " + type);
     }
 
     private void scanPackage(String packageName) throws Exception {

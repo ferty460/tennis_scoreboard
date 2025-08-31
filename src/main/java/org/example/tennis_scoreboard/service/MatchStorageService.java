@@ -1,7 +1,9 @@
 package org.example.tennis_scoreboard.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.tennis_scoreboard.context.Component;
 import org.example.tennis_scoreboard.dto.MatchDto;
+import org.example.tennis_scoreboard.exception.NotFoundException;
 import org.example.tennis_scoreboard.mapper.MatchMapper;
 import org.example.tennis_scoreboard.model.Match;
 import org.example.tennis_scoreboard.model.MatchState;
@@ -10,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @Component
 public class MatchStorageService {
 
@@ -31,7 +34,9 @@ public class MatchStorageService {
         if (matches.containsKey(uuid)) {
             return matches.get(uuid);
         }
-        throw new IllegalStateException("Match with uuid " + uuid + " not found");
+
+        log.error("Match with uuid {} not found", uuid);
+        throw new NotFoundException("No match with uuid " + uuid + " or it is already finished");
     }
 
     public void updateMatchState(UUID uuid, MatchState match) {

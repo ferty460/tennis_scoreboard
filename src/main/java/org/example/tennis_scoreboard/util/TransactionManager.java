@@ -1,6 +1,8 @@
 package org.example.tennis_scoreboard.util;
 
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+import org.example.tennis_scoreboard.exception.TransactionException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -8,6 +10,7 @@ import org.hibernate.Transaction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+@Slf4j
 @UtilityClass
 public class TransactionManager {
 
@@ -23,7 +26,8 @@ public class TransactionManager {
             if (transaction != null) {
                 transaction.rollback();
             }
-            throw new RuntimeException("Transaction failed", e);
+            log.error(e.getMessage(), e);
+            throw new TransactionException("Transaction failed: " + e.getMessage());
         }
     }
 
@@ -31,7 +35,8 @@ public class TransactionManager {
         try (Session session = sessionFactory.openSession()) {
             return sessionFunction.apply(session);
         } catch (Exception e) {
-            throw new RuntimeException("Transaction failed", e);
+            log.error(e.getMessage(), e);
+            throw new TransactionException("Transaction failed: " + e.getMessage());
         }
     }
 

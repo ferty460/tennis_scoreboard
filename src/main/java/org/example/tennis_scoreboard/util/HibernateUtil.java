@@ -2,11 +2,15 @@ package org.example.tennis_scoreboard.util;
 
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+import org.example.tennis_scoreboard.exception.PersistenceException;
 import org.example.tennis_scoreboard.model.Match;
 import org.example.tennis_scoreboard.model.Player;
+import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+@Slf4j
 @UtilityClass
 public class HibernateUtil {
 
@@ -22,8 +26,12 @@ public class HibernateUtil {
                     .addAnnotatedClass(Player.class)
                     .addAnnotatedClass(Match.class)
                     .buildSessionFactory();
-        } catch (Throwable ex) {
-            throw new ExceptionInInitializerError(ex);
+        } catch (HibernateException e) {
+            log.error("Error loading Hibernate SessionFactory", e);
+            throw new PersistenceException("Hibernate configuration failed: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("Error loading Hibernate SessionFactory", e);
+            throw new PersistenceException("Failed to initialize SessionFactory: " + e.getMessage());
         }
     }
 
