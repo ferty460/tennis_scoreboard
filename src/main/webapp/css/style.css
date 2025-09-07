@@ -124,6 +124,14 @@ body {
     height: auto;
 }
 
+.new-match__error-message {
+    font-family: monospace;
+    color: red;
+    font-weight: bold;
+    text-align: center;
+    padding-bottom: 10px;
+}
+
 form {
     display: flex;
     flex-direction: column;

@@ -36,12 +36,17 @@
                 <h1 class="error-title">
                     ${not empty requestScope.statusCode ? requestScope.statusCode : pageContext.errorData.statusCode}
                 </h1>
+                <c:if test="${empty requestScope.errorMessage}">
+                    <p class="error-message">
+                            Page not found
+                    </p>
+                </c:if>
                 <c:if test="${not empty requestScope.errorMessage}">
                     <p class="error-message">
                             ${requestScope.errorMessage}
                     </p>
                 </c:if>
-                <c:if test="${empty requestScope.errorMessage and not empty pageContext.errorData.throwable}">
+                <c:if test="${not empty pageContext.errorData.throwable}">
                     <p class="error-message">
                             ${pageContext.errorData.throwable.message}
                     </p>

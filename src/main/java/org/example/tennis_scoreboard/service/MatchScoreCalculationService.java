@@ -1,6 +1,5 @@
 package org.example.tennis_scoreboard.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.example.tennis_scoreboard.context.Autowired;
 import org.example.tennis_scoreboard.context.Component;
 import org.example.tennis_scoreboard.dto.MatchDto;
@@ -11,7 +10,6 @@ import org.example.tennis_scoreboard.model.MatchState;
 import java.util.Objects;
 import java.util.UUID;
 
-@Slf4j
 @Component
 public class MatchScoreCalculationService {
 
@@ -28,7 +26,6 @@ public class MatchScoreCalculationService {
         MatchState state = matchStorageService.getMatchState(matchUuid);
 
         if (state == null || state.isFinished()) {
-            log.error("No such match or it is already finished");
             throw new NotFoundException("No such match or it is already finished");
         }
 

@@ -1,4 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -33,6 +35,9 @@
         <div class="new-match">
             <div class="new-match__content">
                 <div class="new-match__form">
+                    <c:if test="${not empty requestScope.errorMessage}">
+                        <p class="new-match__error-message">${requestScope.errorMessage}</p>
+                    </c:if>
                     <form action="new-match" method="post">
                         <div class="form-group">
                             <label for="firstPlayerName">Первый игрок</label>

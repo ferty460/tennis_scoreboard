@@ -1,6 +1,5 @@
 package org.example.tennis_scoreboard.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.example.tennis_scoreboard.context.Component;
 import org.example.tennis_scoreboard.dto.MatchDto;
 import org.example.tennis_scoreboard.exception.NotFoundException;
@@ -12,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Slf4j
 @Component
 public class MatchStorageService {
 
@@ -35,7 +33,6 @@ public class MatchStorageService {
             return matches.get(uuid);
         }
 
-        log.error("Match with uuid {} not found", uuid);
         throw new NotFoundException("No match with uuid " + uuid + " or it is already finished");
     }
 

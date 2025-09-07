@@ -1,7 +1,6 @@
 package org.example.tennis_scoreboard.context;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.example.tennis_scoreboard.exception.ContextException;
 
 import java.io.File;
@@ -14,16 +13,18 @@ import java.util.Objects;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 public class ApplicationContext {
 
     @Getter
     private final Map<Class<?>, Object> beans = new HashMap<>();
+
+    @Getter
+    private final Map<String, Object> namedBeans = new HashMap<>();
+
     private final List<Class<?>> beanClasses = new ArrayList<>();
 
     public ApplicationContext(Class<?> configClass) {
         if (!configClass.isAnnotationPresent(ComponentScan.class)) {
-            log.error("No @ComponentScan on config class");
             throw new ContextException("No @ComponentScan on config class");
         }
 
@@ -33,7 +34,6 @@ public class ApplicationContext {
             createAllBeans();
             injectDependencies();
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
             throw new ContextException(e.getMessage());
         }
     }
@@ -42,15 +42,23 @@ public class ApplicationContext {
         if (beans.containsKey(type)) {
             return type.cast(beans.get(type));
         }
-        log.error("No bean found for type {}", type);
         throw new ContextException("No bean found for type " + type);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getBean(String name) {
+        Object bean = namedBeans.get(name);
+        if (bean == null) {
+            throw new ContextException("No bean found with name: " + name);
+        }
+        return (T) bean;
     }
 
     private void scanPackage(String packageName) throws Exception {
         String packagePath = packageName.replace('.', '/');
         URL resource = Thread.currentThread().getContextClassLoader().getResource(packagePath);
         if (resource == null) {
-            throw new RuntimeException("Package not found " + packagePath);
+            throw new ContextException("Package not found " + packagePath);
         }
 
         File directory = new File(resource.getFile());
@@ -93,7 +101,7 @@ public class ApplicationContext {
                 if (dependencyClass != null) {
                     createBean(dependencyClass);
                 } else {
-                    throw new RuntimeException("No bean class found for dependency type: " + dependencyType);
+                    throw new ContextException("No bean class found for dependency type: " + dependencyType);
                 }
             }
             dependencies[i] = beans.get(dependencyType);
@@ -119,7 +127,7 @@ public class ApplicationContext {
                 if (field.isAnnotationPresent(Autowired.class)) {
                     Object dependency = beans.get(field.getType());
                     if (dependency == null) {
-                        throw new RuntimeException("No bean found for field injection: " + field.getType());
+                        throw new ContextException("No bean found for field injection: " + field.getType());
                     }
                     field.setAccessible(true);
                     field.set(bean, dependency);
@@ -132,6 +140,11 @@ public class ApplicationContext {
         beans.put(clazz, instance);
         for (Class<?> interfacee : clazz.getInterfaces()) {
             beans.put(interfacee, instance);
+        }
+
+        Component component = clazz.getAnnotation(Component.class);
+        if (component != null && !component.value().isEmpty()) {
+            namedBeans.put(component.value(), instance);
         }
     }
 

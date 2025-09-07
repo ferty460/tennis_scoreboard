@@ -4,24 +4,34 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+import org.example.tennis_scoreboard.context.ApplicationContext;
 import org.example.tennis_scoreboard.dto.MatchDto;
 import org.example.tennis_scoreboard.dto.PlayerDto;
 import org.example.tennis_scoreboard.dto.PlayersInMatchRequest;
+import org.example.tennis_scoreboard.exception.PlayerNameException;
 import org.example.tennis_scoreboard.service.MatchService;
 import org.example.tennis_scoreboard.service.MatchStorageService;
 import org.example.tennis_scoreboard.service.PlayerService;
+import org.example.tennis_scoreboard.util.validation.Validator;
 
 import java.io.IOException;
 import java.util.UUID;
 
-@Slf4j
 @WebServlet("/new-match")
 public class NewMatchServlet extends InjectableHttpServlet {
 
     private MatchStorageService matchStorageService;
     private MatchService matchService;
     private PlayerService playerService;
+
+    private Validator<PlayersInMatchRequest, PlayerNameException> validator;
+
+    @Override
+    public void init() {
+        super.init();
+        ApplicationContext context = (ApplicationContext) getServletContext().getAttribute("applicationContext");
+        this.validator = context.getBean("playerNameValidator");
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -33,6 +43,7 @@ public class NewMatchServlet extends InjectableHttpServlet {
         PlayersInMatchRequest players = new PlayersInMatchRequest(
                 req.getParameter("firstPlayerName"), req.getParameter("secondPlayerName")
         );
+        validator.validate(players);
 
         PlayerDto firstPlayerDto = new PlayerDto(null, players.firstPlayerName());
         PlayerDto secondPlayerDto = new PlayerDto(null, players.secondPlayerName());

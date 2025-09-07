@@ -1,6 +1,5 @@
 package org.example.tennis_scoreboard.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.example.tennis_scoreboard.context.Autowired;
 import org.example.tennis_scoreboard.context.Component;
 import org.example.tennis_scoreboard.dto.FinishedMatchDto;
@@ -18,7 +17,6 @@ import java.util.Optional;
 
 import static org.example.tennis_scoreboard.repository.MatchRepositoryImpl.DEFAULT_LIMIT;
 
-@Slf4j
 @Component
 public class MatchService {
 
@@ -39,9 +37,10 @@ public class MatchService {
         if (StringUtils.hasText(pageStr)) {
             try {
                 page = Integer.parseInt(pageStr);
-                if (page < 1) page = 1;
+                if (page < 1) {
+                    throw new PaginationException("Page must be greater than 0");
+                }
             } catch (NumberFormatException e) {
-                log.error("Invalid page number", e);
                 throw new PaginationException(e.getMessage());
             }
         }
@@ -58,7 +57,12 @@ public class MatchService {
         }
 
         List<FinishedMatchDto> matchDtoList = mapper.toFinishedMatchDtoList(finishedMatches);
-        return new PaginationResult<>(matchDtoList, page, totalCount, DEFAULT_LIMIT);
+        var result = new PaginationResult<>(matchDtoList, page, totalCount, DEFAULT_LIMIT);
+        if (page > result.getTotalPages()) {
+            throw new PaginationException("Page is greater than total pages");
+        }
+
+        return result;
     }
 
     public MatchDto getById(long id) {
@@ -68,7 +72,6 @@ public class MatchService {
             return mapper.toDto(matchOptional.get());
         }
 
-        log.error("Match with id {} not found", id);
         throw new NotFoundException("Match with id " + id + " not found");
     }
 

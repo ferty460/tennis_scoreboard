@@ -1,6 +1,5 @@
 package org.example.tennis_scoreboard.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.example.tennis_scoreboard.context.Autowired;
 import org.example.tennis_scoreboard.context.Component;
 import org.example.tennis_scoreboard.dto.PlayerDto;
@@ -12,7 +11,6 @@ import org.example.tennis_scoreboard.repository.PlayerRepository;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Component
 public class PlayerService {
 
@@ -35,13 +33,18 @@ public class PlayerService {
             return mapper.toDto(playerOptional.get());
         }
 
-        log.error("Player with id {} not found", id);
         throw new NotFoundException("Player with id " + id + " not found");
     }
 
     public PlayerDto save(PlayerDto playerDto) {
-        Player player = mapper.toEntity(playerDto);
-        player = playerRepository.save(player);
+        String name = playerDto.name();
+
+        Player player = playerRepository.findByName(name)
+                .orElseGet(() -> {
+                    Player newPlayer = mapper.toEntity(playerDto);
+                    return playerRepository.save(newPlayer);
+                });
+
         return mapper.toDto(player);
     }
 

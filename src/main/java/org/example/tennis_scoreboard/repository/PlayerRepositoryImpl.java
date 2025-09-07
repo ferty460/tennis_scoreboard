@@ -31,6 +31,18 @@ public class PlayerRepositoryImpl implements PlayerRepository {
     }
 
     @Override
+    public Optional<Player> findByName(String name) {
+        log.debug("Finding player by name: {}", name);
+        return TransactionManager.executeReadOnly(sessionFactory, session ->
+                session.createQuery("select p from Player p where p.name = :name", Player.class)
+                        .setParameter("name", name)
+                        .getResultList()
+                        .stream()
+                        .findFirst()
+        );
+    }
+
+    @Override
     public List<Player> findAll() {
         log.debug("Finding all players");
         return TransactionManager.executeReadOnly(sessionFactory, session ->
