@@ -8,7 +8,6 @@ import org.example.tennis_scoreboard.mapper.PlayerMapper;
 import org.example.tennis_scoreboard.model.Player;
 import org.example.tennis_scoreboard.repository.PlayerRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -20,10 +19,6 @@ public class PlayerService {
     @Autowired
     public PlayerService(PlayerRepository playerRepository) {
         this.playerRepository = playerRepository;
-    }
-
-    public List<Player> getAll() {
-        return playerRepository.findAll();
     }
 
     public PlayerDto getById(long id) {
@@ -46,14 +41,6 @@ public class PlayerService {
                 });
 
         return mapper.toDto(player);
-    }
-
-    public void update(Player player) {
-        playerRepository.update(player);
-    }
-
-    public void delete(Player player) {
-        playerRepository.delete(player);
     }
 
 }

@@ -13,6 +13,12 @@ import java.util.UUID;
 @Component
 public class MatchScoreCalculationService {
 
+    private static final int MIN_POINTS_TO_WIN_GAME = 4;
+    private static final int MIN_POINT_DIFFERENCE_TO_WIN_GAME = 2;
+    private static final int MIN_GAMES_TO_WIN_SET = 6;
+    private static final int MIN_GAME_DIFFERENCE_TO_WIN_SET = 2;
+    private static final int SETS_TO_WIN_MATCH = 2;
+
     private final MatchService matchService;
     private final MatchStorageService matchStorageService;
 
@@ -40,11 +46,15 @@ public class MatchScoreCalculationService {
         matchStorageService.updateMatchState(matchUuid, state);
     }
 
+    public void finishMatch(UUID matchUuid) {
+        matchStorageService.removeMatch(matchUuid);
+    }
+
     private void checkGameWinner(MatchDto matchDto, MatchState state) {
         int firstPlayerPoints = state.getFirstPlayerPoints();
         int secondPlayerPoints = state.getSecondPlayerPoints();
 
-        if ((firstPlayerPoints >= 4 || secondPlayerPoints >= 4) && Math.abs(firstPlayerPoints - secondPlayerPoints) >= 2) {
+        if (isFinishedGame(firstPlayerPoints, secondPlayerPoints)) {
             if (firstPlayerPoints > secondPlayerPoints) {
                 state.setFirstPlayerGames(state.getFirstPlayerGames() + 1);
             } else {
@@ -62,7 +72,7 @@ public class MatchScoreCalculationService {
         int firstPlayerGames = state.getFirstPlayerGames();
         int secondPlayerGames = state.getSecondPlayerGames();
 
-        if ((firstPlayerGames >= 6 || secondPlayerGames >= 6) && Math.abs(firstPlayerGames - secondPlayerGames) >= 2) {
+        if (isFinishedSet(firstPlayerGames, secondPlayerGames)) {
             if (firstPlayerGames > secondPlayerGames) {
                 state.setFirstPlayerSets(state.getFirstPlayerSets() + 1);
             } else {
@@ -77,7 +87,7 @@ public class MatchScoreCalculationService {
     }
 
     private void checkMatchWinner(MatchDto matchDto, MatchState state) {
-        if (state.getFirstPlayerSets() == 2) {
+        if (state.getFirstPlayerSets() == SETS_TO_WIN_MATCH) {
             MatchDto updatedMatch = new MatchDto(
                     matchDto.id(),
                     matchDto.firstPlayer(),
@@ -86,7 +96,7 @@ public class MatchScoreCalculationService {
             );
             matchService.update(updatedMatch);
             state.setFinished(true);
-        } else if (state.getSecondPlayerSets() == 2) {
+        } else if (state.getSecondPlayerSets() == SETS_TO_WIN_MATCH) {
             MatchDto updatedMatch = new MatchDto(
                     matchDto.id(),
                     matchDto.firstPlayer(),
@@ -98,8 +108,14 @@ public class MatchScoreCalculationService {
         }
     }
 
-    public void finishMatch(UUID matchUuid) {
-        matchStorageService.removeMatch(matchUuid);
+    private boolean isFinishedGame(int firstPlayerPoints, int secondPlayerPoints) {
+        return (firstPlayerPoints >= MIN_POINTS_TO_WIN_GAME || secondPlayerPoints >= MIN_POINTS_TO_WIN_GAME) &&
+                Math.abs(firstPlayerPoints - secondPlayerPoints) >= MIN_POINT_DIFFERENCE_TO_WIN_GAME;
+    }
+
+    private boolean isFinishedSet(int firstPlayerGames, int secondPlayerGames) {
+        return (firstPlayerGames >= MIN_GAMES_TO_WIN_SET || secondPlayerGames >= MIN_GAMES_TO_WIN_SET) &&
+                Math.abs(firstPlayerGames - secondPlayerGames) >= MIN_GAME_DIFFERENCE_TO_WIN_SET;
     }
 
 }

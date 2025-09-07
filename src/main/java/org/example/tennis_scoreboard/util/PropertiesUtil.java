@@ -1,14 +1,12 @@
 package org.example.tennis_scoreboard.util;
 
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
 import org.example.tennis_scoreboard.exception.PropertyLoadException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-@Slf4j
 @UtilityClass
 public class PropertiesUtil {
 
@@ -26,14 +24,13 @@ public class PropertiesUtil {
     private static void loadProperties() {
         try (InputStream inputStream = PropertiesUtil.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE)) {
             if (inputStream == null) {
-                log.error("Properties file not found: {}", PROPERTIES_FILE);
                 throw new PropertyLoadException("Properties file not found: " + PROPERTIES_FILE);
             }
             PROPERTIES.load(inputStream);
         } catch (IOException e) {
-            log.error("Could not load properties file: {}", PROPERTIES_FILE);
-            throw new PropertyLoadException("Failed to load properties file: " + PROPERTIES_FILE +
-                    ". Error: " + e.getMessage());
+            throw new PropertyLoadException(
+                    "Failed to load properties file: %s. Error: %s".formatted(PROPERTIES_FILE, e.getMessage())
+            );
         }
     }
 

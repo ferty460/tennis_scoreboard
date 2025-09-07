@@ -22,8 +22,10 @@ public class ErrorHandlerFilter extends HttpFilter {
             throws IOException, ServletException {
         try {
             chain.doFilter(req, res);
-        } catch (PlayerNameException | PaginationException e) {
+        } catch (PlayerNameException e) {
             sendError(res, req, HttpServletResponse.SC_BAD_REQUEST, e.getMessage(), "WEB-INF/new_match.jsp");
+        } catch (PaginationException e) {
+            sendError(res, req, HttpServletResponse.SC_BAD_REQUEST, e.getMessage(), "/error.jsp");
         } catch (NotFoundException e) {
             sendError(res, req, HttpServletResponse.SC_NOT_FOUND, e.getMessage(), "/error.jsp");
         } catch (Exception e) {

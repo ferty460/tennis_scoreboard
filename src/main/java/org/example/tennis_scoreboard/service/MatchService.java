@@ -28,10 +28,6 @@ public class MatchService {
         this.matchRepository = matchRepository;
     }
 
-    public List<Match> getAll() {
-        return matchRepository.findAll();
-    }
-
     public PaginationResult<FinishedMatchDto> getAllFinishedMatches(String pageStr, String playerName) {
         int page = 1;
         if (StringUtils.hasText(pageStr)) {
@@ -83,10 +79,6 @@ public class MatchService {
     public void update(MatchDto matchDto) {
         Match match = mapper.toEntity(matchDto);
         matchRepository.update(match);
-    }
-
-    public void delete(Match match) {
-        matchRepository.delete(match);
     }
 
 }
