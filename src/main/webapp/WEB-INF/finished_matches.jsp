@@ -34,18 +34,18 @@
     <h2>Завершенные матчи</h2>
     <div class="finished-matches">
       <div class="filter-block">
-        <form action="" method="get">
-          <label for="filterByName">Фильтр по имени</label>
-          <input
-                  type="search"
-                  name="filter_by_player_name"
-                  id="filterByName"
-                  placeholder="Фильтр по имени"
-                  value="${not empty param.filter_by_player_name ? param.filter_by_player_name : ''}"
-          >
-          <button type="submit"></button>
-          <button type="reset"></button>
-        </form>
+          <form action="" method="get">
+            <label for="filterByName">Фильтр по имени</label>
+            <input
+                    type="search"
+                    name="filter_by_player_name"
+                    id="filterByName"
+                    placeholder="Фильтр по имени"
+                    value="${not empty param.filter_by_player_name ? param.filter_by_player_name : ''}"
+            >
+            <button type="submit"></button>
+            <button type="reset" id="reset-button"></button>
+          </form>
       </div>
       <div class="finished-matches-block">
         <table class="finished-matches-table">
@@ -121,5 +121,19 @@
 
 </div>
 
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const resetButton = document.getElementById('reset-button');
+
+    resetButton.addEventListener('click', function(e) {
+      e.preventDefault();
+
+      const url = new URL(window.location.href);
+      url.searchParams.delete('filter_by_player_name');
+      url.searchParams.delete('page');
+      window.location.href = url.toString();
+    });
+  });
+</script>
 </body>
 </html>
