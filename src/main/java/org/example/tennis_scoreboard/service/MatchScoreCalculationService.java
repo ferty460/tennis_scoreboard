@@ -17,6 +17,8 @@ public class MatchScoreCalculationService {
     private static final int MIN_POINT_DIFFERENCE_TO_WIN_GAME = 2;
     private static final int MIN_GAMES_TO_WIN_SET = 6;
     private static final int MIN_GAME_DIFFERENCE_TO_WIN_SET = 2;
+    private static final int TIE_BREAK_THRESHOLD = 6;
+    private static final int MIN_POINTS_TO_WIN_TIE_BREAK = 7;
     private static final int SETS_TO_WIN_MATCH = 2;
 
     private final MatchService matchService;
@@ -42,7 +44,12 @@ public class MatchScoreCalculationService {
             state.setSecondPlayerPoints(state.getSecondPlayerPoints() + 1);
         }
 
-        checkGameWinner(matchDto, state);
+        if (isTieBreak(state.getFirstPlayerGames(), state.getSecondPlayerGames())) {
+            checkTieBreakWinner(matchDto, state);
+        } else {
+            checkGameWinner(matchDto, state);
+        }
+
         matchStorageService.updateMatchState(matchUuid, state);
     }
 
@@ -66,6 +73,40 @@ public class MatchScoreCalculationService {
 
             checkSetWinner(matchDto, state);
         }
+    }
+
+    private void checkTieBreakWinner(MatchDto matchDto, MatchState state) {
+        int firstPlayerPoints = state.getFirstPlayerPoints();
+        int secondPlayerPoints = state.getSecondPlayerPoints();
+
+        if (isFinishedTieBreak(firstPlayerPoints, secondPlayerPoints)) {
+            if (firstPlayerPoints > secondPlayerPoints) {
+                state.setFirstPlayerGames(state.getFirstPlayerGames() + 1);
+            } else {
+                state.setSecondPlayerGames(state.getSecondPlayerGames() + 1);
+            }
+
+            state.setFirstPlayerPoints(0);
+            state.setSecondPlayerPoints(0);
+
+            finishSetAfterTieBreak(matchDto, state);
+        }
+    }
+
+    private void finishSetAfterTieBreak(MatchDto matchDto, MatchState state) {
+        int firstPlayerGames = state.getFirstPlayerGames();
+        int secondPlayerGames = state.getSecondPlayerGames();
+
+        if (firstPlayerGames > secondPlayerGames) {
+            state.setFirstPlayerSets(state.getFirstPlayerSets() + 1);
+        } else {
+            state.setSecondPlayerSets(state.getSecondPlayerSets() + 1);
+        }
+
+        state.setFirstPlayerGames(0);
+        state.setSecondPlayerGames(0);
+
+        checkMatchWinner(matchDto, state);
     }
 
     private void checkSetWinner(MatchDto matchDto, MatchState state) {
@@ -113,9 +154,18 @@ public class MatchScoreCalculationService {
                 Math.abs(firstPlayerPoints - secondPlayerPoints) >= MIN_POINT_DIFFERENCE_TO_WIN_GAME;
     }
 
+    private boolean isFinishedTieBreak(int firstPlayerPoints, int secondPlayerPoints) {
+        return (firstPlayerPoints >= MIN_POINTS_TO_WIN_TIE_BREAK || secondPlayerPoints >= MIN_POINTS_TO_WIN_TIE_BREAK) &&
+                Math.abs(firstPlayerPoints - secondPlayerPoints) >= MIN_POINT_DIFFERENCE_TO_WIN_GAME;
+    }
+
     private boolean isFinishedSet(int firstPlayerGames, int secondPlayerGames) {
         return (firstPlayerGames >= MIN_GAMES_TO_WIN_SET || secondPlayerGames >= MIN_GAMES_TO_WIN_SET) &&
                 Math.abs(firstPlayerGames - secondPlayerGames) >= MIN_GAME_DIFFERENCE_TO_WIN_SET;
+    }
+
+    private boolean isTieBreak(int firstPlayerGames, int secondPlayerGames) {
+        return firstPlayerGames == TIE_BREAK_THRESHOLD && secondPlayerGames == TIE_BREAK_THRESHOLD;
     }
 
 }

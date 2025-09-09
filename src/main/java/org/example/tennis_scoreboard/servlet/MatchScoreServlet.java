@@ -40,7 +40,7 @@ public class MatchScoreServlet extends InjectableHttpServlet {
             req.setAttribute("winner", match.winner());
         }
         req.setAttribute("isFinished", matchState.isFinished());
-        req.setAttribute("matchState", response);
+        req.setAttribute("state", response);
         req.getRequestDispatcher("WEB-INF/match_score.jsp").forward(req, resp);
     }
 
@@ -59,29 +59,13 @@ public class MatchScoreServlet extends InjectableHttpServlet {
     }
 
     private MatchStateResponse getMatchStateResponse(UUID matchUuid, MatchState matchState, MatchDto matchDto) {
-        long firstPlayerId = matchDto.firstPlayer().id();
-        long secondPlayerId = matchDto.secondPlayer().id();
-        String firstPlayerName = matchDto.firstPlayer().name();
-        String secondPlayerName = matchDto.secondPlayer().name();
-        int firstPlayerSets = matchState.getFirstPlayerSets();
-        int secondPlayerSets = matchState.getSecondPlayerSets();
-        int firstPlayerGames = matchState.getFirstPlayerGames();
-        int secondPlayerGames = matchState.getSecondPlayerGames();
-        int firstPlayerPoints = matchState.getFirstPlayerPoints();
-        int secondPlayerPoints = matchState.getSecondPlayerPoints();
-
-        String[] scores = TennisScoreConverter.convertPointsToTennisScore(firstPlayerPoints, secondPlayerPoints)
-                .split("-");
-        String firstPlayerPointsStr = scores[0];
-        String secondPlayerPointsStr = scores[1];
+        String[] scores = TennisScoreConverter.convertPointsToTennisScore(matchState).split("-");
+        String firstPlayerPoints = scores[0];
+        String secondPlayerPoints = scores[1];
 
         return new MatchStateResponse(
-                matchUuid,
-                firstPlayerId, secondPlayerId,
-                firstPlayerName, secondPlayerName,
-                firstPlayerSets, secondPlayerSets,
-                firstPlayerGames, secondPlayerGames,
-                firstPlayerPointsStr, secondPlayerPointsStr
+                matchUuid, matchDto, matchState,
+                firstPlayerPoints, secondPlayerPoints
         );
     }
 

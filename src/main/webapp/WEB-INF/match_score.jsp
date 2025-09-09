@@ -46,25 +46,25 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <td><b>${requestScope.matchState.firstPlayerName()}</b></td>
-                        <td>${requestScope.matchState.firstPlayerSets()}</td>
-                        <td>${requestScope.matchState.firstPlayerGames()}</td>
-                        <td>${requestScope.matchState.firstPlayerPoints()}</td>
+                        <td><b>${requestScope.state.matchDto.firstPlayer.name}</b></td>
+                        <td>${requestScope.state.matchState.firstPlayerSets}</td>
+                        <td>${requestScope.state.matchState.firstPlayerGames}</td>
+                        <td>${requestScope.state.firstPlayerPoints}</td>
                         <td>
-                            <form action="match-score?uuid=${requestScope.matchState.matchUuid()}" method="post">
-                                <input type="hidden" name="playerId" value="${requestScope.matchState.firstPlayerId()}">
+                            <form action="match-score?uuid=${requestScope.state.matchUuid}" method="post">
+                                <input type="hidden" name="playerId" value="${requestScope.state.matchDto.firstPlayer.id}">
                                 <input type="submit" value="+ Очко">
                             </form>
                         </td>
                     </tr>
                     <tr>
-                        <td><b>${requestScope.matchState.secondPlayerName()}</b></td>
-                        <td>${requestScope.matchState.secondPlayerSets()}</td>
-                        <td>${requestScope.matchState.secondPlayerGames()}</td>
-                        <td>${requestScope.matchState.secondPlayerPoints()}</td>
+                        <td><b>${requestScope.state.matchDto.secondPlayer.name}</b></td>
+                        <td>${requestScope.state.matchState.secondPlayerSets}</td>
+                        <td>${requestScope.state.matchState.secondPlayerGames}</td>
+                        <td>${requestScope.state.secondPlayerPoints}</td>
                         <td>
-                            <form action="match-score?uuid=${requestScope.matchState.matchUuid()}" method="post">
-                                <input type="hidden" name="playerId" value="${requestScope.matchState.secondPlayerId()}">
+                            <form action="match-score?uuid=${requestScope.state.matchUuid}" method="post">
+                                <input type="hidden" name="playerId" value="${requestScope.state.matchDto.secondPlayer.id}">
                                 <input type="submit" value="+ Очко">
                             </form>
                         </td>
@@ -82,20 +82,20 @@
 
                 <div class="players-container">
                     <div class="player-card">
-                        <div class="player-name">${requestScope.matchState.firstPlayerName()}</div>
-                        <div class="player-score">${requestScope.matchState.firstPlayerSets()}</div>
+                        <div class="player-name">${requestScope.state.matchDto.firstPlayer.name}</div>
+                        <div class="player-score">${requestScope.state.matchState.firstPlayerSets}</div>
                     </div>
 
                     <div class="vs-separator">VS</div>
 
                     <div class="player-card">
-                        <div class="player-name">${requestScope.matchState.secondPlayerName()}</div>
-                        <div class="player-score">${requestScope.matchState.secondPlayerSets()}</div>
+                        <div class="player-name">${requestScope.state.matchDto.secondPlayer.name}</div>
+                        <div class="player-score">${requestScope.state.matchState.secondPlayerSets}</div>
                     </div>
                 </div>
 
                 <div class="winner-badge">
-                    ПОБЕДИТЕЛЬ: <c:if test="${requestScope.winner != null}">${requestScope.winner.name()}</c:if>
+                    ПОБЕДИТЕЛЬ: <c:if test="${requestScope.winner != null}">${requestScope.winner.name}</c:if>
                 </div>
 
                 <a href="${pageContext.request.contextPath}/matches" class="action-link">
