@@ -4,6 +4,7 @@ import org.example.tennis_scoreboard.dto.MatchDto;
 import org.example.tennis_scoreboard.dto.PlayerDto;
 import org.example.tennis_scoreboard.exception.NotFoundException;
 import org.example.tennis_scoreboard.model.MatchState;
+import org.example.tennis_scoreboard.util.TennisScoreConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -149,6 +150,37 @@ public class MatchScoreCalculationServiceTest {
                     .hasMessageContaining("No match with uuid " + uuid + " or it is already finished");
         }
 
+
+
+        @Test
+        @DisplayName("Given regular game points — when points converted to score — then shows correct tennis notation")
+        void givenRegularGamePoints_whenPointsConvertedToScore_thenShowsCorrectTennisNotation() {
+            scoreService.pointWon(uuid, match, p1);
+            MatchState state = matchStorageService.getMatchState(uuid);
+            String score1 = TennisScoreConverter.convertPointsToTennisScore(state);
+            assertThat(score1).isEqualTo("15-0");
+
+            scoreService.pointWon(uuid, match, p2);
+            state = matchStorageService.getMatchState(uuid);
+            String score2 = TennisScoreConverter.convertPointsToTennisScore(state);
+            assertThat(score2).isEqualTo("15-15");
+
+            scoreService.pointWon(uuid, match, p1);
+            state = matchStorageService.getMatchState(uuid);
+            String score3 = TennisScoreConverter.convertPointsToTennisScore(state);
+            assertThat(score3).isEqualTo("30-15");
+
+            scoreService.pointWon(uuid, match, p2);
+            state = matchStorageService.getMatchState(uuid);
+            String score4 = TennisScoreConverter.convertPointsToTennisScore(state);
+            assertThat(score4).isEqualTo("30-30");
+
+            scoreService.pointWon(uuid, match, p1);
+            state = matchStorageService.getMatchState(uuid);
+            String score5 = TennisScoreConverter.convertPointsToTennisScore(state);
+            assertThat(score5).isEqualTo("40-30");
+        }
+
     }
 
     @Nested
@@ -200,6 +232,27 @@ public class MatchScoreCalculationServiceTest {
             assertThat(state.getSecondPlayerGames()).isZero();
         }
 
+        @Test
+        @DisplayName("Given multiple deuce cycles — when points converted to score — then correctly shows advantage")
+        void givenMultipleDeuceCycles_whenPointsConvertedToScore_thenCorrectlyShowsAdvantage() {
+            givePreDeuceSituation();
+
+            scoreService.pointWon(uuid, match, p1);
+            MatchState state = matchStorageService.getMatchState(uuid);
+            String score1 = TennisScoreConverter.convertPointsToTennisScore(state);
+            assertThat(score1).isEqualTo("AD-40");
+
+            scoreService.pointWon(uuid, match, p2);
+            state = matchStorageService.getMatchState(uuid);
+            String score2 = TennisScoreConverter.convertPointsToTennisScore(state);
+            assertThat(score2).isEqualTo("40-40");
+
+            scoreService.pointWon(uuid, match, p2);
+            state = matchStorageService.getMatchState(uuid);
+            String score3 = TennisScoreConverter.convertPointsToTennisScore(state);
+            assertThat(score3).isEqualTo("40-AD");
+        }
+
     }
 
     @Nested
@@ -207,8 +260,8 @@ public class MatchScoreCalculationServiceTest {
     class TieBreakSituation {
 
         @Test
-        @DisplayName("Given tie-break — when players alternate games — then remain tied at tie-break")
-        void givenTieBreakSituation_whenPlayersAlternateGames_thenRemainTiedAtTieBreak() {
+        @DisplayName("Given pre tie-break — when players alternate games — then remain tied at tie-break")
+        void givenPreTieBreakSituation_whenPlayersAlternateGames_thenRemainTiedAtTieBreak() {
             givePreTieBreakSituation();
 
             addOneGame(p1);
@@ -222,8 +275,8 @@ public class MatchScoreCalculationServiceTest {
         }
 
         @Test
-        @DisplayName("Given tie-break — when first player wins two games in a row — then wins the set")
-        void givenTieBreakSituation_whenFirstPlayerTakesTwoGameInARow_thenWinsTheSet() {
+        @DisplayName("Given pre tie-break — when first player wins two games in a row — then wins the set")
+        void givenPreTieBreakSituation_whenFirstPlayerTakesTwoGameInARow_thenWinsTheSet() {
             givePreTieBreakSituation();
 
             addOneGame(p1);
@@ -234,6 +287,46 @@ public class MatchScoreCalculationServiceTest {
             assertThat(state.getSecondPlayerGames()).isEqualTo(0);
             assertThat(state.getFirstPlayerSets()).isEqualTo(1);
             assertThat(state.getSecondPlayerSets()).isEqualTo(0);
+        }
+
+        @Test
+        @DisplayName("Given tie-break — when first player wins by 7-5 — then wins the set")
+        void givenTieBreakSituation_whenFirstPlayerWins7to5_thenWinsTheSet() {
+            giveTieBreakSituation();
+
+            // 7-5
+            for (int i = 0; i < 5; i++) {
+                scoreService.pointWon(uuid, match, p1);
+                scoreService.pointWon(uuid, match, p2);
+            }
+            scoreService.pointWon(uuid, match, p1);
+            scoreService.pointWon(uuid, match, p1);
+
+            MatchState state = matchStorageService.getMatchState(uuid);
+            assertThat(state.getFirstPlayerPoints()).isEqualTo(0);
+            assertThat(state.getSecondPlayerPoints()).isEqualTo(0);
+            assertThat(state.getFirstPlayerGames()).isEqualTo(0);
+            assertThat(state.getSecondPlayerGames()).isEqualTo(0);
+            assertThat(state.getFirstPlayerSets()).isEqualTo(1);
+            assertThat(state.getSecondPlayerSets()).isEqualTo(0);
+        }
+
+        @Test
+        @DisplayName("Given tie-break — when points are converted to score — then numeric format is used")
+        void givenTieBreakSituation_whenPointsConvertedToScore_thenNumericFormatUsed() {
+            giveTieBreakSituation();
+
+            // 3-2
+            scoreService.pointWon(uuid, match, p1);
+            scoreService.pointWon(uuid, match, p1);
+            scoreService.pointWon(uuid, match, p1);
+            scoreService.pointWon(uuid, match, p2);
+            scoreService.pointWon(uuid, match, p2);
+
+            MatchState state = matchStorageService.getMatchState(uuid);
+            String score = TennisScoreConverter.convertPointsToTennisScore(state);
+
+            assertThat(score).isEqualTo("3-2");
         }
 
     }
@@ -262,6 +355,12 @@ public class MatchScoreCalculationServiceTest {
             addOneGame(p1);
             addOneGame(p2);
         }
+    }
+
+    private void giveTieBreakSituation() {
+        givePreTieBreakSituation();
+        addOneGame(p1);
+        addOneGame(p2);
     }
 
 }
