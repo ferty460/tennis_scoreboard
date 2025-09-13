@@ -7,9 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.tennis_scoreboard.config.AppConfig;
 import org.example.tennis_scoreboard.util.HibernateUtil;
 import org.example.tennis_scoreboard.util.MigrationRunner;
-import org.h2.tools.Server;
-
-import java.sql.SQLException;
 
 @Slf4j
 @WebListener
@@ -21,13 +18,6 @@ public class ApplicationContextListener implements ServletContextListener {
 
         ApplicationContext applicationContext = new ApplicationContext(AppConfig.class);
         sce.getServletContext().setAttribute("applicationContext", applicationContext);
-
-        // dev only, todo: remove
-        try {
-            Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082").start();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
         log.info("Application context initialized successfully!");
     }
