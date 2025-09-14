@@ -12,6 +12,7 @@ import org.example.tennis_scoreboard.model.PaginationResult;
 import org.example.tennis_scoreboard.repository.MatchRepository;
 import org.flywaydb.core.internal.util.StringUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,36 +30,14 @@ public class MatchService {
     }
 
     public PaginationResult<FinishedMatchDto> getAllFinishedMatches(String pageStr, String playerName) {
-        int page = 1;
-        if (StringUtils.hasText(pageStr)) {
-            try {
-                page = Integer.parseInt(pageStr);
-                if (page < 1) {
-                    throw new PaginationException("Page must be greater than 0");
-                }
-            } catch (NumberFormatException e) {
-                throw new PaginationException(e.getMessage());
-            }
-        }
+        int page = parsePageNumber(pageStr);
+        long totalCount = getTotalCount(playerName);
+        validatePageNumber(page, totalCount);
 
-        List<Match> finishedMatches;
-        long totalCount;
-
-        if (StringUtils.hasText(playerName)) {
-            finishedMatches = matchRepository.findAllByPlayerNamePaged(playerName, page);
-            totalCount = matchRepository.countAllByPlayerName(playerName);
-        } else {
-            finishedMatches = matchRepository.findAllPaged(page);
-            totalCount = matchRepository.countAll();
-        }
-
+        List<Match> finishedMatches = getFinishedMatches(playerName, page, totalCount);
         List<FinishedMatchDto> matchDtoList = mapper.toFinishedMatchDtoList(finishedMatches);
-        var result = new PaginationResult<>(matchDtoList, page, totalCount, DEFAULT_LIMIT);
-        if (page > result.getTotalPages()) {
-            throw new PaginationException("Page is greater than total pages");
-        }
 
-        return result;
+        return new PaginationResult<>(matchDtoList, page, totalCount, DEFAULT_LIMIT);
     }
 
     public MatchDto getById(long id) {
@@ -79,6 +58,52 @@ public class MatchService {
     public void update(MatchDto matchDto) {
         Match match = mapper.toEntity(matchDto);
         matchRepository.update(match);
+    }
+
+    private int parsePageNumber(String pageStr) {
+        if (!StringUtils.hasText(pageStr)) {
+            return 1;
+        }
+
+        try {
+            return Integer.parseInt(pageStr);
+        } catch (NumberFormatException e) {
+            throw new PaginationException("Page must be a valid number");
+        }
+    }
+
+    private long getTotalCount(String playerName) {
+        return StringUtils.hasText(playerName)
+                ? matchRepository.countAllByPlayerName(playerName)
+                : matchRepository.countAll();
+    }
+
+    private void validatePageNumber(int page, long totalCount) {
+        if (totalCount == 0) {
+            return;
+        }
+
+        int totalPages = calculateTotalPages(totalCount);
+        if (page < 1) {
+            throw new PaginationException("Page must be greater than 0");
+        }
+        if (page > totalPages) {
+            throw new PaginationException("Page is greater than total pages");
+        }
+    }
+
+    private int calculateTotalPages(long totalCount) {
+        return (int) Math.ceil((double) totalCount / DEFAULT_LIMIT);
+    }
+
+    private List<Match> getFinishedMatches(String playerName, int page, long totalCount) {
+        if (totalCount == 0) {
+            return Collections.emptyList();
+        }
+
+        return StringUtils.hasText(playerName)
+                ? matchRepository.findAllByPlayerNamePaged(playerName, page)
+                : matchRepository.findAllPaged(page);
     }
 
 }

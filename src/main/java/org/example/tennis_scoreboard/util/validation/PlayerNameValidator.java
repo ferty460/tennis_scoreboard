@@ -26,7 +26,7 @@ public class PlayerNameValidator implements Validator<PlayersInMatchRequest, Pla
             throw new PlayerNameException("Player names cannot be longer than 32 characters");
         }
         if (!firstPlayerName.matches(PLAYER_NAME_REGEX) || !secondPlayerName.matches(PLAYER_NAME_REGEX)) {
-            throw new PlayerNameException("Wrong format of player name");
+            throw new PlayerNameException("The player's name can contain only letters (ru/en), numbers and spaces.");
         }
     }
 
